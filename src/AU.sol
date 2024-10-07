@@ -7,7 +7,7 @@ import "./NPCAccessControls.sol";
 
 contract AU is ERC20 {
     address public npcRent;
-    NPCAccessControl public _npcAccessControls;
+    NPCAccessControls public _npcAccessControls;
 
     error InvalidAddress();
 
@@ -23,7 +23,7 @@ contract AU is ERC20 {
         address _npcAccessControlsAddress
     ) ERC20("Autonomy Units", "AU") {
         npcRent = _rentAddress;
-        _npcAccessControls = NPCAccessControl(_npcAccessControlsAddress);
+        _npcAccessControls = NPCAccessControls(_npcAccessControlsAddress);
     }
 
     function mint(address _to, uint256 _mintAmount) public OnlyRentOrAdmin {

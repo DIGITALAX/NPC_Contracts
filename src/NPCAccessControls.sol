@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.26;
 
-contract NPCAccessControl {
+contract NPCAccessControls {
     string public symbol;
     string public name;
 
@@ -28,7 +28,7 @@ contract NPCAccessControl {
     constructor() {
         _admins[msg.sender] = true;
         symbol = "NPCAC";
-        name = "NPCAccessControl";
+        name = "NPCAccessControls";
     }
 
     function addAdmin(address _admin) external onlyAdmin {

@@ -9,7 +9,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract NPCRent {
-    NPCAccessControl public npcAccessControls;
+    NPCAccessControls public npcAccessControls;
     NPCSpectate public npcSpectate;
     AU public au;
     string public symbol;
@@ -56,7 +56,7 @@ contract NPCRent {
         address _npcSpectateAddress,
         address _auAddress
     ) {
-        npcAccessControls = NPCAccessControl(_npcAccessControlsAddress);
+        npcAccessControls = NPCAccessControls(_npcAccessControlsAddress);
         npcSpectate = NPCSpectate(_npcSpectateAddress);
         au = AU(_auAddress);
         symbol = "NPCR";

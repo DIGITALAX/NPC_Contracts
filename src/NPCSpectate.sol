@@ -7,7 +7,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract NPCSpectate {
-     NPCAccessControl public _npcAccessControls;
+     NPCAccessControls public _npcAccessControls;
     address[] public _nftAddresses;
     address[] public _erc20Addresses;
     address[] private _spectators;
@@ -81,7 +81,7 @@ mapping(uint256 => mapping(uint256 => bool)) private _weeklyPubRecorded;
             mapping(address =>  bool) private _weeklyNPCRecorded;
 
     constructor(address _npcAccessControlsAddress) {
-        _npcAccessControls = NPCAccessControl(_npcAccessControlsAddress);
+        _npcAccessControls = NPCAccessControls(_npcAccessControlsAddress);
         symbol = "NPCS";
         name = "NPCSpectate";
     }
