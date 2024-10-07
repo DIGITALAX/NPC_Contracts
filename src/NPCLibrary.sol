@@ -66,4 +66,24 @@ contract NPCLibrary {
         uint8 totalGlobal;
         uint8 totalWeight;
     }
+
+    struct NPCRent {
+        address npc;
+        uint256 lastRentClock;
+        uint256 activeWeeks;
+        bool initialized;
+    }
+
+    struct AUTracker {
+        address[] spectatorsClaimed;
+        address[] spectatorsElegible;
+        uint256 claimed;
+        uint256 unclaimed;
+        
+    }
+    
+    struct Timer {
+        uint256 total;
+        uint8 weekly;
+    }
 }

@@ -7,15 +7,21 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract NPCSpectate {
-    string public symbol;
-    string public name;
-    NPCAccessControl public _npcAccessControls;
+     NPCAccessControl public _npcAccessControls;
     address[] public _nftAddresses;
     address[] public _erc20Addresses;
+    address[] private _spectators;
+    address[] private _npcs;
+    uint256[][] private _pubs;
+    string public symbol;
+    string public name;
+    uint256 public weeklyClock;
+    uint256 private weeklyCountVotes;
 
     error InsufficientTokenBalance();
     error InvalidAddress();
 
+    event WeeklyReset(address reseter);
     event NPCVote(address spectator, address npc, uint8 weight);
     event PubVote(
         address spectator,
@@ -30,6 +36,14 @@ contract NPCSpectate {
         }
         _;
     }
+
+    modifier OnlyAdminOrNPC() {
+        if (!_npcAccessControls.isAdmin(msg.sender) && !_npcAccessControls.isNPC(msg.sender)) {
+            revert InvalidAddress();
+        }
+        _;
+    }
+
 
     modifier OnlySpectator() {
         if (!_holdsTokens()) {
@@ -54,12 +68,17 @@ contract NPCSpectate {
     mapping(address => uint256) private _erc721Threshold;
     mapping(address => uint8) private _erc20Weight;
     mapping(address => uint8) private _erc721Weight;
-    mapping(address => uint256) private _spectatorNPCGlobalFrequency;
-    mapping(address => uint256) private _spectatorPubGlobalFrequency;
-    mapping(address => mapping(address => uint256))
+    mapping(address => NPCLibrary.Timer) private _spectatorNPCGlobalFrequency;
+    mapping(address => NPCLibrary.Timer) private _spectatorPubGlobalFrequency;
+    mapping(address => mapping(address => NPCLibrary.Timer))
         private _spectatorNPCLocalFrequency;
-    mapping(address => mapping(uint256 => mapping(uint256 => uint256)))
+    mapping(address => mapping(uint256 => mapping(uint256 => NPCLibrary.Timer)))
         private _spectatorPubLocalFrequency;
+        mapping(address => NPCLibrary.Timer) private _npcFrequency;
+     mapping(address => NPCLibrary.Timer) private _spectatorFrequency;
+        mapping(address => bool) private _weeklySpectatorRecorded;
+mapping(uint256 => mapping(uint256 => bool)) private _weeklyPubRecorded;
+            mapping(address =>  bool) private _weeklyNPCRecorded;
 
     constructor(address _npcAccessControlsAddress) {
         _npcAccessControls = NPCAccessControl(_npcAccessControlsAddress);
@@ -68,7 +87,7 @@ contract NPCSpectate {
     }
 
     function voteForNPC(NPCLibrary.NPCVote memory _vote) public OnlySpectator {
-        uint8 _peso = _tokenWeighting();
+        uint8 _peso = _tokenWeighting() - _spectatorNPCLocalFrequency[_vote.spectator][_vote.npc].weekly;
 
         NPCLibrary.NPCScore storage _npc = _npcScores[_vote.npc];
         NPCLibrary.NPCVote memory _previousVote = _npcVotes[_vote.spectator][
@@ -84,14 +103,31 @@ contract NPCSpectate {
         _npcVotes[_vote.spectator][_vote.npc] = _vote;
         _spectatorToWeight[_vote.spectator] = _peso;
 
-        _spectatorNPCLocalFrequency[_vote.spectator][_vote.npc];
-        _spectatorNPCGlobalFrequency[_vote.spectator];
+        _spectatorNPCLocalFrequency[_vote.spectator][_vote.npc].total += 1;
+        _spectatorNPCGlobalFrequency[_vote.spectator].total += 1;
+        _npcFrequency[_vote.npc].total += 1;
+         _spectatorFrequency[_vote.spectator].total += 1;
+         _spectatorNPCLocalFrequency[_vote.spectator][_vote.npc].weekly += 1;
+        _spectatorNPCGlobalFrequency[_vote.spectator].weekly += 1;
+        _npcFrequency[_vote.npc].weekly += 1;
+         _spectatorFrequency[_vote.spectator].total += 1;
 
+           if (!_weeklySpectatorRecorded[_vote.spectator]) {
+            _spectators.push(_vote.spectator);
+            _weeklySpectatorRecorded[_vote.spectator] = true;
+        }
+
+        if (!_weeklyNPCRecorded[_vote.npc]) {
+            _npcs.push(_vote.npc);
+            _weeklyNPCRecorded[_vote.npc] = true;
+        }
+
+weeklyCountVotes++;
         emit NPCVote(msg.sender, _vote.npc, _peso);
     }
 
     function voteForPub(NPCLibrary.PubVote memory _vote) public OnlySpectator {
-        uint8 _peso = _tokenWeighting();
+        uint8 _peso = _tokenWeighting() - _spectatorPubLocalFrequency[_vote.spectator][_vote.profileId][_vote.pubId].weekly;
 
         NPCLibrary.PubScore storage _pub = _pubScores[_vote.profileId][
             _vote.pubId
@@ -109,9 +145,34 @@ contract NPCSpectate {
         _pubVotes[_vote.spectator][_vote.profileId][_vote.pubId] = _vote;
         _spectatorToWeight[_vote.spectator] = _peso;
 
-        _spectatorPubLocalFrequency[_vote.spectator][_vote.profileId][_vote.pubId] += 1;
-        _spectatorPubGlobalFrequency[_vote.spectator] += 1;
+        _spectatorPubLocalFrequency[_vote.spectator][_vote.profileId][_vote.pubId].total += 1;
+        _spectatorPubGlobalFrequency[_vote.spectator].total += 1;
+        _npcFrequency[_vote.npc].total += 1;
+                 _spectatorFrequency[_vote.spectator].total += 1;
+                _spectatorPubLocalFrequency[_vote.spectator][_vote.profileId][_vote.pubId].weekly += 1;
+        _spectatorPubGlobalFrequency[_vote.spectator].weekly += 1;
+        _npcFrequency[_vote.npc].weekly += 1;
+         _spectatorFrequency[_vote.spectator].total += 1;
 
+
+
+        if (!_weeklyPubRecorded[_vote.profileId][_vote.pubId]) {
+            _pubs.push([_vote.profileId, _vote.pubId]);
+            _weeklyPubRecorded[_vote.profileId][_vote.pubId] = true;
+        }
+
+            if (!_weeklySpectatorRecorded[_vote.spectator]) {
+            _spectators.push(_vote.spectator);
+            _weeklySpectatorRecorded[_vote.spectator] = true;
+        }
+
+        if (!_weeklyNPCRecorded[_vote.npc]) {
+            _npcs.push(_vote.npc);
+            _weeklyNPCRecorded[_vote.npc] = true;
+        }
+
+
+weeklyCountVotes++;
         emit PubVote(msg.sender, _vote.profileId, _vote.pubId, _peso);
     }
 
@@ -316,51 +377,136 @@ contract NPCSpectate {
             }
         }
 
-        return _holdsEnoughERC20 && _holdsEnoughNFT;
+        return _holdsEnoughERC20 || _holdsEnoughNFT;
     }
 
-    function _tokenWeighting() internal view returns (uint8) {
-        address _spectator = msg.sender;
+function _tokenWeighting() internal view returns (uint8) {
+    address _spectator = msg.sender;
 
-        uint8 _totalWeight = 0;
-        uint256 totalERC20Balance = 0;
-        uint256 totalNFTBalance = 0;
+    uint256 totalERC20Weight = 0;
+    uint256 totalNFTWeight = 0;
 
-        for (uint256 i = 0; i < _erc20Addresses.length; i++) {
-            IERC20 _erc20 = IERC20(_erc20Addresses[i]);
-            uint256 _balance = _erc20.balanceOf(_spectator);
-            uint8 _tokenWeight = _erc20Weight[_erc20Addresses[i]];
-
-            if (_balance > 0 && _tokenWeight > 0) {
-                totalERC20Balance += _balance * _tokenWeight;
-            }
+    for (uint256 i = 0; i < _erc20Addresses.length; i++) {
+        IERC20 _erc20 = IERC20(_erc20Addresses[i]);
+        uint256 _balance = _erc20.balanceOf(_spectator);
+        uint8 _tokenWeight = _erc20Weight[_erc20Addresses[i]];
+        if (_balance > 0 && _tokenWeight > 0) {
+            totalERC20Weight += uint256(_balance) * _tokenWeight;
         }
-
-        for (uint256 i = 0; i < _nftAddresses.length; i++) {
-            IERC721 _nft = IERC721(_nftAddresses[i]);
-            uint256 _nftBalance = _nft.balanceOf(_spectator);
-            uint8 _nftWeight = _erc721Weight[_nftAddresses[i]];
-
-            if (_nftBalance > 0 && _nftWeight > 0) {
-                totalNFTBalance += _nftBalance * _nftWeight;
-            }
-        }
-
-        uint256 totalBalance = totalERC20Balance + totalNFTBalance;
-
-        if (totalBalance > 0) {
-            _totalWeight = uint8(
-                (totalBalance * 100) / (totalERC20Balance + totalNFTBalance)
-            );
-        }
-
-        if (_totalWeight > 100) {
-            _totalWeight = 100;
-        }
-
-        return _totalWeight;
     }
 
+    for (uint256 i = 0; i < _nftAddresses.length; i++) {
+        IERC721 _nft = IERC721(_nftAddresses[i]);
+        uint256 _balance = _nft.balanceOf(_spectator);
+        uint8 _nftWeight = _erc721Weight[_nftAddresses[i]];
+
+        if (_balance > 0 && _nftWeight > 0) {
+            totalNFTWeight += uint256(_balance) * _nftWeight;
+        }
+    }
+
+    uint256 totalWeight = totalERC20Weight + totalNFTWeight;
+
+    uint8 finalWeight;
+    if (totalWeight == 0) {
+        finalWeight = 0; 
+    } else if (totalWeight <= 100) {
+        finalWeight = uint8(totalWeight); 
+    } else {
+  
+        finalWeight = uint8(100 + (log2(totalWeight) - log2(100)));
+        if (finalWeight > 100) {
+            finalWeight = 100;
+        }
+    }
+
+    return finalWeight;
+}
+
+function log2(uint256 x) internal pure returns (uint8) {
+    uint8 result = 0;
+    while (x > 1) {
+        x >>= 1; 
+        result++;
+    }
+    return result;
+}
+
+
+function weeklyReset() public OnlyAdminOrNPC {
+    if (block.timestamp > weeklyClock + 1 weeks) {
+        for (uint256 i = 0; i < _spectators.length; i++) {
+            address _spectator = _spectators[i];
+            _spectatorNPCGlobalFrequency[_spectator].weekly = 0;
+            _spectatorPubGlobalFrequency[_spectator].weekly = 0;
+
+            for (uint256 j = 0; j < _npcs.length; j++) {
+                address npc = _npcs[j];
+              delete  _spectatorNPCLocalFrequency[_spectator][npc].weekly;
+            }
+
+for (uint256 j = 0; j < _pubs.length; j++) {
+    uint256 profileId = _pubs[j][0];
+    uint256 pubId = _pubs[j][1];
+    delete _spectatorPubLocalFrequency[_spectator][profileId][pubId].weekly;
+    delete _weeklyPubRecorded[profileId][pubId];
+}
+
+ delete _weeklySpectatorRecorded[_spectator];
+            delete _spectatorFrequency[_spectator].weekly;
+        }
+
+        for (uint256 i = 0; i < _npcs.length; i++) {
+            address _npc = _npcs[i];
+           delete _npcFrequency[_npc].weekly;
+        delete   _weeklyNPCRecorded[_npc];
+        }
+
+  
+        delete _spectators;
+        delete _npcs;
+        delete _pubs;
+
+        weeklyClock = block.timestamp;
+
+weeklyCountVotes = 0;
+        emit WeeklyReset(msg.sender);
+    }
+}
+
+    function setERC20Thresholds(
+        address _token,
+        uint256 _threshold
+    ) public OnlyAdmin {
+        _erc20Threshold[_token] = _threshold;
+    }
+
+    function setERC721Thresholds(
+        address _token,
+        uint256 _threshold
+    ) public OnlyAdmin {
+        _erc721Threshold[_token] = _threshold;
+    }
+
+    function setERC20Weight(address _token, uint8 _weight) public OnlyAdmin {
+        _erc20Weight[_token] = _weight;
+    }
+
+    function setERC721Weight(address _token, uint8 _weight) public OnlyAdmin {
+        _erc721Weight[_token] = _weight;
+    }
+
+    function setERC20TokenAddresses(
+        address[] memory _addresses
+    ) public OnlyAdmin {
+        _erc20Addresses = _addresses;
+    }
+
+    function setNFTTokenAddresses(
+        address[] memory _addresses
+    ) public OnlyAdmin {
+        _nftAddresses = _addresses;
+    }
     function getNPCVoteComment(address _spectator, address _npc, uint256 _index) public view returns (string memory) {
         return _spectatorToAllNPCVotes[_spectator][_npc][_index].comment;
     }
@@ -459,72 +605,108 @@ contract NPCSpectate {
     }
       
  
-
-
-
     function getSpectatorCurrentWeight(address _spectator) public view returns (uint8) {
         return _spectatorToWeight[_spectator];
     }
 
-    function getSpectatorNPCGlobalFrequency(
+        function getSpectatorNPCTotalGlobalFrequency(
         address _spectator
     ) public view returns (uint256) {
-        return _spectatorNPCGlobalFrequency[_spectator];
+        return _spectatorNPCGlobalFrequency[_spectator].total;
     }
 
-    function getSpectatorPubGlobalFrequency(
+
+    function getSpectatorNPCWeeklyGlobalFrequency(
+        address _spectator
+    ) public view returns (uint8) {
+        return _spectatorNPCGlobalFrequency[_spectator].weekly;
+    }
+
+    function getSpectatorPubTotalGlobalFrequency(
         address _spectator
     ) public view returns (uint256) {
-        return _spectatorPubGlobalFrequency[_spectator];
+        return _spectatorPubGlobalFrequency[_spectator].total;
     }
 
-    function getSpectatorNPCLocalFrequency(
+     function getSpectatorPubWeeklyGlobalFrequency(
+        address _spectator
+    ) public view returns (uint8) {
+        return _spectatorPubGlobalFrequency[_spectator].weekly;
+    }
+
+
+    function getSpectatorNPCTotalLocalFrequency(
         address _spectator,
         address _npc
     ) public view returns (uint256) {
-        return _spectatorNPCLocalFrequency[_spectator][_npc];
+        return _spectatorNPCLocalFrequency[_spectator][_npc].total;
     }
 
-    function getSpectatorPubLocalFrequency(
+        function getSpectatorNPCTotalWeeklyFrequency(
+        address _spectator,
+        address _npc
+    ) public view returns (uint8) {
+        return _spectatorNPCLocalFrequency[_spectator][_npc].weekly;
+    }
+
+    function getNPCTotalFrequency(
+        address _npc
+    ) public view returns (uint256) {
+        return _npcFrequency[_npc].total;
+    }
+
+    function getNPCWeeklyFrequency(
+        address _npc
+    ) public view returns (uint8) {
+        return _npcFrequency[_npc].weekly;
+    }
+    
+      function getSpectatorWeeklyFrequency(
+        address _npc
+    ) public view returns (uint8) {
+        return _spectatorFrequency[_npc].weekly;
+    }
+
+      function getSpectatorTotalFrequency(
+        address _npc
+    ) public view returns (uint256) {
+        return _spectatorFrequency[_npc].total;
+    }
+
+        function getSpectatorPubTotalLocalFrequency(
         address _spectator,
         uint256 _profileId,
         uint256 _pubId
     ) public view returns (uint256) {
-        return _spectatorPubLocalFrequency[_spectator][_profileId][_pubId];
+        return _spectatorPubLocalFrequency[_spectator][_profileId][_pubId].total;
     }
 
-    function setERC20Thresholds(
-        address _token,
-        uint256 _threshold
-    ) public OnlyAdmin {
-        _erc20Threshold[_token] = _threshold;
+    function getSpectatorPubWeeklyLocalFrequency(
+        address _spectator,
+        uint256 _profileId,
+        uint256 _pubId
+    ) public view returns (uint8) {
+        return _spectatorPubLocalFrequency[_spectator][_profileId][_pubId].weekly;
     }
 
-    function setERC721Thresholds(
-        address _token,
-        uint256 _threshold
-    ) public OnlyAdmin {
-        _erc721Threshold[_token] = _threshold;
+    function getWeeklySpectatorsCount()public view returns (uint256) {
+        return _spectators.length;
+    }
+    
+    function getWeeklyNPCsCount() public view returns (uint256) {
+        return _npcs.length;
     }
 
-    function setERC20Weight(address _token, uint8 _weight) public OnlyAdmin {
-        _erc20Weight[_token] = _weight;
+function getAllWeeklyFrequency() public view returns (uint256) {
+        return weeklyCountVotes;
     }
 
-    function setERC721Weight(address _token, uint8 _weight) public OnlyAdmin {
-        _erc721Weight[_token] = _weight;
+    function getWeeklySpectators()public view returns (address[] memory) {
+        return _spectators;
     }
 
-    function setERC20TokenAddresses(
-        address[] memory _addresses
-    ) public OnlyAdmin {
-        _erc20Addresses = _addresses;
-    }
-
-    function setNFTTokenAddresses(
-        address[] memory _addresses
-    ) public OnlyAdmin {
-        _nftAddresses = _addresses;
+    function getWeeklyNPCs() public view returns (address[] memory) {
+        return _npcs;
     }
 
     function getNFTTokenAddresses() public view returns (address[] memory) {
