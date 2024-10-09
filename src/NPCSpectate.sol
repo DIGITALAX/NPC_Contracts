@@ -79,6 +79,7 @@ contract NPCSpectate {
         mapping(address => bool) private _weeklySpectatorRecorded;
 mapping(uint256 => mapping(uint256 => bool)) private _weeklyPubRecorded;
             mapping(address =>  bool) private _weeklyNPCRecorded;
+     
 
     constructor(address _npcAccessControlsAddress) {
         _npcAccessControls = NPCAccessControls(_npcAccessControlsAddress);

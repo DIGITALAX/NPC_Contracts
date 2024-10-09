@@ -73,17 +73,14 @@ contract NPCLibrary {
         uint256 activeWeeks;
         bool initialized;
     }
-
-    struct AUTracker {
-        address[] spectatorsClaimed;
-        address[] spectatorsElegible;
-        uint256 claimed;
-        uint256 unclaimed;
-        
-    }
     
     struct Timer {
         uint256 total;
-        uint8 weekly;
+        uint256 weekly;
+    }
+
+        struct NPCAU {
+        uint256 rent;
+        uint256 claimed;
     }
 }
