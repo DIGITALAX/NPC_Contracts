@@ -89,5 +89,6 @@ contract NPCLibrary {
     struct Token {
      uint256   weight;
      uint256   threshold;
+     uint256  decimal;
     }
 }

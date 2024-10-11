@@ -40,17 +40,10 @@ contract NPCTest is Test {
 
         vm.prank(address(this));
         npcAccessControls.addAdmin(admin);
-
-              npcSpectate.setERC20Thresholds(address(mona), 20);
-        npcSpectate.setERC20Weight(address(mona), 100);
-      npcSpectate.setERC20Thresholds(address(delta), 1);
-        npcSpectate.setERC20Weight(address(delta), 50);
-
-
-      npcSpectate.setERC721Thresholds(address(genesis), 1);
-        npcSpectate.setERC721Weight(address(genesis), 90);
-      npcSpectate.setERC721Thresholds(address(fashion), 5);
-        npcSpectate.setERC721Weight(address(fashion), 50);
+                  npcAccessControls.setERC20Value(address(mona), 100, 20, 1000000000000000000);
+    npcAccessControls.setERC20Value(address(delta), 50, 1, 1000000000000000000);
+      npcAccessControls.setERC721Value(address(genesis), 90, 1);
+  npcAccessControls.setERC721Value(address(fashion), 50, 5);
 
               address[] memory erc20s = new address[](2);
         erc20s[0] =    address(mona);
@@ -60,8 +53,8 @@ contract NPCTest is Test {
         erc721s[0] =    address(genesis);
         erc721s[1] = address(fashion);
 
-        npcSpectate.setERC20TokenAddresses(erc20s);
-        npcSpectate.setNFTTokenAddresses(erc721s);
+        npcAccessControls.setERC20Addresses(erc20s);
+        npcAccessControls.setERC721Addresses(erc721s);
     }
 
     function testConstructorInitializesValues() public view {
@@ -102,6 +95,7 @@ contract NPCTest is Test {
 
   NPCLibrary.NPCVote memory vote = NPCLibrary.NPCVote({
          npc: npc1,
+         spectator: spectator1,
             model: 50,
             scene: 40,
             chatContext: 30,
@@ -113,7 +107,6 @@ contract NPCTest is Test {
             lora: 10,
             spriteSheet: 50,
             global: 11,
-            weight: 0,
             comment: "Good NPC"
         });
 
@@ -128,6 +121,7 @@ contract NPCTest is Test {
 
   NPCLibrary.PubVote memory vote_pub = NPCLibrary.PubVote({
             npc: npc1,
+               spectator: spectator1,
             model: 54,
             chatContext: 34,
             personality: 63,
@@ -138,7 +132,6 @@ contract NPCTest is Test {
 media: 0,
 style: 83,
             global: 63,
-            weight: 0,
             comment: "Good NPC"
         });
 
@@ -169,6 +162,7 @@ style: 83,
       vm.prank(spectator1);
   NPCLibrary.NPCVote memory vote_npc = NPCLibrary.NPCVote({
             npc: npc1,
+               spectator: spectator1,
             model: 50,
             scene: 40,
             chatContext: 30,
@@ -180,7 +174,6 @@ style: 83,
             lora: 10,
             spriteSheet: 50,
             global: 11,
-            weight: 0,
             comment: "Good NPC"
         });
 

@@ -86,18 +86,21 @@ contract NPCAccessControls {
     ) public OnlyAdmin {
         _erc721Values[_erc721Address] = NPCLibrary.Token({
             weight: _weight,
-            threshold: _threshold
+            threshold: _threshold,
+            decimal: 0
         });
     }
 
-    function setERC20WeightValue(
+    function setERC20Value(
         address _erc20Address,
         uint256 _weight,
-        uint256 _threshold
+        uint256 _threshold,
+        uint256 _decimal
     ) public OnlyAdmin {
         _erc20Values[_erc20Address] = NPCLibrary.Token({
             weight: _weight,
-            threshold: _threshold
+            threshold: _threshold,
+            decimal: _decimal
         });
     }
 
@@ -121,6 +124,12 @@ contract NPCAccessControls {
         address _erc20Token
     ) public view returns (uint256) {
         return _erc20Values[_erc20Token].threshold;
+    }
+
+    function getERC20TokenDecimal(
+        address _erc20Token
+    ) public view returns (uint256) {
+        return _erc20Values[_erc20Token].decimal;
     }
 
     function getERC721TokenThreshold(

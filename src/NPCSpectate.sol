@@ -151,7 +151,7 @@ _weeklyCountVotes++;
         for (uint256 i = 0; i < _erc20Addresses.length; i++) {
             IERC20 erc20 = IERC20(_erc20Addresses[i]);
             if (
-                erc20.balanceOf(_spectator) >= npcAccessControls.getERC20TokenThreshold(_erc20Addresses[i])
+                erc20.balanceOf(_spectator) >= npcAccessControls.getERC20TokenThreshold(_erc20Addresses[i]) * npcAccessControls.getERC20TokenDecimal(_erc20Addresses[i])
             ) {
                 _holdsEnoughERC20 = true;
                 break;
