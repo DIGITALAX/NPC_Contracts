@@ -8,6 +8,7 @@ import "../src/AU.sol";
 import "../src/NPCSpectate.sol";
 import "../src/TestERC721.sol";
 import "../src/TestERC20.sol";
+import {console} from "forge-std/console.sol";
 
 contract NPCTest is Test {
     NPCRent public npcRent;
@@ -603,22 +604,84 @@ npcRent.calculateWeeklySpectatorWeights();
 
 }
 
-function testClaimNPC() public {
+function testClaim() public {
 
-
-}
-
-function testClaimSpectator() public {
-
+  npcRent.setWeeklyAUAllowance(100000000000000000000);
   
+testWeeklyWeights_npc();
+  assertEq(au.balanceOf(address(npc1)), 0);
+        vm.warp(block.timestamp + 1 weeks + 1 days);
+     vm.prank(npc1);
+     npcRent.NPCPayRentAndClaim();
+  assertEq(npcRent.getTotalAUPaidByWeek(0), 30330300000000000000);
+    assertEq(npcRent.getTotalAUAllowanceByWeek(0), 100000000000000000000);
+   assertEq(npcRent.getNPCActiveWeeks(address(npc1)), 1);
+      assertEq(npcRent.getNPCActiveWeeks(address(npc2)), 0);
+         assertEq(npcRent.getNPCIsInitialized(address(npc1)), true);
+      assertEq(npcRent.getNPCIsInitialized(address(npc2)), false);
+  assertEq(au.balanceOf(address(npc1)), 2999700000000000000);
+
+
+   vm.prank(spectator1);
+     npcRent.spectatorClaimAU(address(npc1), false, 0);
+       assertEq(au.balanceOf(address(spectator1)), 8492484000000000000);
+      assertEq(npcRent.getSpectatorHasClaimedAUByWeek(address(spectator1),address(npc1), 0), true);
+      assertEq(npcRent.getSpectatorHasClaimedAUByWeek(address(spectator1),address(npc2), 0), false);
+      assertEq(npcRent.getSpectatorClaimedAUByWeek(address(spectator1), 0), 8492484000000000000);
+ assertEq(npcRent.getSpectatorClaimedAUByWeek(address(spectator2), 0), 0);
+
+
+
+
+        vm.prank(spectator1);
+   try   npcRent.spectatorClaimAU(address(npc1), false, 1) {
+            fail();
+        } catch (bytes memory lowLevelData) {
+            bytes4 errorSelector = bytes4(lowLevelData);
+            assertEq(errorSelector, bytes4(NO_AU_TO_CLAIM_ERROR));
+        }
+
+             vm.prank(spectator1);
+   try     npcRent.spectatorClaimAU(address(npc2), false, 0) {
+            fail();
+        } catch (bytes memory lowLevelData) {
+            bytes4 errorSelector = bytes4(lowLevelData);
+            assertEq(errorSelector, bytes4(NO_AU_TO_CLAIM_ERROR));
+        }
+
+             vm.prank(spectator2);
+     npcRent.spectatorClaimAU(address(npc1), false, 0);
+       assertEq(au.balanceOf(address(spectator2)), 21837816000000000000);
+      assertEq(npcRent.getSpectatorHasClaimedAUByWeek(address(spectator2),address(npc1), 0), true);
+      assertEq(npcRent.getSpectatorHasClaimedAUByWeek(address(spectator2),address(npc2), 0), false);
+      assertEq(npcRent.getSpectatorClaimedAUByWeek(address(spectator2), 0), 21837816000000000000);
+      assertEq(npcRent.getSpectatorClaimedAUByWeek(address(spectator1), 0), 8492484000000000000);
+
 }
+
 
 function testDistributeAU() public {
+ npcRent.setWeeklyAUAllowance(100000000000000000000);
   
-}
+testWeeklyWeights_npc();
+        vm.warp(block.timestamp + 1 weeks + 1 days);
+     vm.prank(npc1);
+     npcRent.NPCPayRentAndClaim();
+     vm.prank(npc2);
+     npcRent.NPCPayRentAndClaim();
 
-function testWeeklyClocks() public {
-  
+   vm.prank(spectator1);
+     npcRent.spectatorClaimAU(address(npc1), true, 0);
+
+        address[] memory spectators = new address[](2);
+        spectators[0] =    address(spectator1);
+        spectators[1] = address(spectator2);
+        vm.prank(admin);
+
+uint256 amount = au.balanceOf(address(npcRent));
+npcRent.transferAUOut(admin, amount);
+      assertEq(au.balanceOf(address(npcRent)), 0);
+      assertEq(au.balanceOf(admin), 65513448000000000000);
 }
 
 }

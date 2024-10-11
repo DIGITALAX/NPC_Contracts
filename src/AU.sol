@@ -12,15 +12,18 @@ contract AU is ERC20 {
     error InvalidAddress();
 
     modifier OnlyRentOrAdmin() {
-        if (!_npcAccessControls.isAdmin(msg.sender) && msg.sender != npcRent) {
+        if (
+            !_npcAccessControls.isAdmin(msg.sender) &&
+            msg.sender != npcRent
+        ) {
             revert InvalidAddress();
         }
         _;
     }
 
-    constructor(
-        address _rentAddress,
-        address _npcAccessControlsAddress
+    constructor(   address _npcAccessControlsAddress,
+        address _rentAddress
+     
     ) ERC20("Autonomy Units", "AU") {
         npcRent = _rentAddress;
         _npcAccessControls = NPCAccessControls(_npcAccessControlsAddress);

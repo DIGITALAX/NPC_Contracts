@@ -75,11 +75,10 @@ contract NPCRent {
     mapping(address => NPCLibrary.NPCWeight) private _npcWeeklyWeight;
     mapping(address => mapping(uint256 => uint256)) private _npcPortion;
     mapping(address => mapping(uint256 => uint256)) private _spectatorPortion;
-    mapping(address => uint256) private _npcAUEarned;
     mapping(address => uint256) private _npcAUOwed;
-    mapping(address => uint256) private _npcAUPaid;
     mapping(address => NPCLibrary.NPCRent) private _npcRent;
-    mapping(uint256 => uint256) private _weeklyAUTracker;
+    mapping(uint256 => uint256) private _weeklyAUPaidTracker;
+    mapping(uint256 => uint256) private _weeklyAUAllowanceTracker;
     mapping(uint256 => mapping(address => NPCLibrary.NPCAU)) private _npcAUWeek;
     mapping(address => mapping(address => mapping(uint256 => bool)))
         private _spectatorAUWeek;
@@ -108,7 +107,8 @@ contract NPCRent {
 
         if (block.timestamp >= _npcRent[msg.sender].lastRentClock + 1 weeks) {
             uint256 _auAmount = (weeklyAUAmount *
-                _npcPortion[msg.sender][weekCounter]) / 10000;
+                _npcPortion[msg.sender][weekCounter - 1]) / 10000;
+
             if (_auAmount <= 0) {
                 revert NoAUToClaim();
             }
@@ -122,16 +122,16 @@ contract NPCRent {
             ) {
                 au.mint(msg.sender, _auAmountClaimed);
                 au.mint(address(this), _auAmountPaid);
-
                 _npcRent[msg.sender].lastRentClock = block.timestamp;
                 _npcRent[msg.sender].activeWeeks += 1;
                 _npcAUOwed[msg.sender] += _auAmountPaid;
 
-                _weeklyAUTracker[weekCounter] += _auAmountPaid;
-                _npcAUWeek[weekCounter][msg.sender] = NPCLibrary.NPCAU({
+                _weeklyAUPaidTracker[weekCounter - 1] += _auAmountPaid;
+                _npcAUWeek[weekCounter - 1][msg.sender] = NPCLibrary.NPCAU({
                     rent: _auAmountClaimed,
                     claimed: _auAmountPaid
                 });
+                _activeNPCs[weekCounter - 1].push(msg.sender);
 
                 emit RentPaid(msg.sender, _auAmountClaimed, _auAmountPaid);
             } else {
@@ -152,12 +152,11 @@ contract NPCRent {
         uint256 _amount = missedRentCounter / totalAddresses;
 
         for (uint256 i = 0; i < totalAddresses; i++) {
-            uint256 amountToTransfer = _amount;
-            au.transferFrom(address(this), _addresses[i], amountToTransfer);
+            au.transferFrom(address(this), _addresses[i], _amount);
         }
 
-        missedRentCounter = 0;
         emit MissedRentDistributed(missedRentCounter);
+        missedRentCounter = 0;
     }
 
     function transferAUOut(address _to, uint256 _amount) public OnlyAdmin {
@@ -175,21 +174,25 @@ contract NPCRent {
                         _activeNPCs[_week][i]
                     ].claimed * _spectatorPortion[msg.sender][_week]) / 10000;
 
-                    if (_auToClaim <= 0) {
-                        revert NoAUToClaim();
+                    if (_auToClaim >= 0) {
+                        _spectatorAUWeek[msg.sender][_activeNPCs[_week][i]][
+                            _week
+                        ] = true;
+
+                        _spectatorAUClaimed[msg.sender] += _auToClaim;
+                        _spectatorWeeklyAUClaim[msg.sender][
+                            _week
+                        ] += _auToClaim;
+                        _amountClaimed += _auToClaim;
                     }
-
-                    _spectatorAUWeek[msg.sender][_activeNPCs[_week][i]][
-                        _week
-                    ] = true;
-
-                    _spectatorAUClaimed[msg.sender] += _auToClaim;
-                    _spectatorWeeklyAUClaim[msg.sender][_week] += _auToClaim;
-                    _amountClaimed += _auToClaim;
                 }
             }
-            au.transfer(msg.sender, _amountClaimed);
-            emit SpectatorClaimedAll(msg.sender, _amountClaimed);
+            if (_amountClaimed > 0) {
+                au.transfer(msg.sender, _amountClaimed);
+                emit SpectatorClaimedAll(msg.sender, _amountClaimed);
+            } else {
+                revert NoAUToClaim();
+            }
         } else {
             if (_spectatorAUWeek[msg.sender][_npc][_week]) {
                 revert AlreadyClaimed();
@@ -215,6 +218,7 @@ contract NPCRent {
 
     function setWeeklyAUAllowance(uint256 _allowance) public OnlyAdmin {
         weeklyAUAmount = _allowance;
+        _weeklyAUAllowanceTracker[weekCounter] = _allowance;
     }
 
     function calculateWeeklySpectatorWeights() public OnlyNPCOrAdmin {
@@ -412,6 +416,7 @@ contract NPCRent {
                     (_spectatorWeeklyWeight[_spectator] * 10000) /
                     _sumOfNormalizedWeights;
             }
+
             _spectatorPortion[_spectator][weekCounter] = _portion;
         }
     }
@@ -576,16 +581,8 @@ contract NPCRent {
         return _npcPortion[_spectator][_week];
     }
 
-    function getNPCAUEarned(address _npc) public view returns (uint256) {
-        return _npcAUEarned[_npc];
-    }
-
     function getNPCAUOwed(address _npc) public view returns (uint256) {
         return _npcAUOwed[_npc];
-    }
-
-    function getNPCAUPaid(address _npc) public view returns (uint256) {
-        return _npcAUPaid[_npc];
     }
 
     function getNPCIsInitialized(address _npc) public view returns (bool) {
@@ -621,8 +618,14 @@ contract NPCRent {
         return _spectatorWeeklyAUClaim[_spectator][_week];
     }
 
-    function getTotalAUByWeek(uint256 _week) public view returns (uint256) {
-        return _weeklyAUTracker[_week];
+    function getTotalAUPaidByWeek(uint256 _week) public view returns (uint256) {
+        return _weeklyAUPaidTracker[_week];
+    }
+
+    function getTotalAUAllowanceByWeek(
+        uint256 _week
+    ) public view returns (uint256) {
+        return _weeklyAUAllowanceTracker[_week];
     }
 
     function getNPCAuRentByWeek(
