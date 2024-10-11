@@ -8,6 +8,6 @@ contract TestERC20 is ERC20 {
     constructor() ERC20("Test Token", "TST") {}
 
     function mint(address _to, uint256 _amount) public {
-        _mint(_to, _amount);
+        _mint(_to, _amount * 1000000000000000000);
     }
 }

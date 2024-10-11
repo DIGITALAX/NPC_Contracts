@@ -21,10 +21,14 @@ contract NPCTest is Test {
 
     address public admin = address(0x1);
     address public npc1 = address(0x2);
-    address public spectator1 = address(0x3);
+        address public npc2 = address(0x3);
+    address public spectator1 = address(0x4);
+    address public spectator2 = address(0x5);
 
     bytes32 constant NO_AU_TO_CLAIM_ERROR = keccak256("NoAUToClaim()");
     bytes32 constant INSUFFICIENTE_TOKENS_ERROR = keccak256("InsufficientTokenBalance()");
+    bytes32 constant INVALID_ADDRESS_ERROR = keccak256("InvalidAddress()");
+    
 
     function setUp() public {
         npcAccessControls = new NPCAccessControls();
@@ -90,6 +94,7 @@ contract NPCTest is Test {
     }
 
     function testVote_noTokens() public {
+      npcAccessControls.addNPC(npc1);
 
         vm.prank(spectator1);
 
@@ -155,7 +160,7 @@ style: 83,
     }
 
       function testVote_withTokens() public {
-
+        npcAccessControls.addNPC(npc1);
         vm.prank(spectator1);
 
         mona.mint(address(spectator1), 100);
@@ -179,39 +184,96 @@ style: 83,
 
    npcSpectate.voteForNPC(vote_npc);
 
-//         vm.expectEmit(true, true, true, true);
-//         assertEq(npcSpectate.getNPCVoteModel(address(spectator1), address(npc1), 0), 5);
-//         assertEq(npcSpectate.getNPCVoteScene(address(spectator1), address(npc1), 0) , 4);
-//         assertEq(npcSpectate.getNPCVoteChatContext(address(spectator1), address(npc1), 0), 3);
-//         assertEq(npcSpectate.getNPCVoteAppearance(address(spectator1), address(npc1), 0), 2);
-//         assertEq(npcSpectate.getNPCVoteCompletedJobs(address(spectator1), address(npc1), 0), 1);
-//         assertEq(npcSpectate.getNPCVotePersonality(address(spectator1), address(npc1), 0), 6);
-//         assertEq(npcSpectate.getNPCVoteTraining(address(spectator1), address(npc1), 0), 7);
-//         assertEq(npcSpectate.getNPCVoteTokenizer(address(spectator1), address(npc1), 0), 8);
-//         assertEq(npcSpectate.getNPCVoteLora(address(spectator1), address(npc1), 0), 9);
-//         assertEq(npcSpectate.getNPCVoteSpriteSheet(address(spectator1), address(npc1), 0), 10);
-//         assertEq(npcSpectate.getNPCVoteGlobal(address(spectator1), address(npc1), 0), 11);
-//         assertEq(npcSpectate.getNPCVoteComment(address(spectator1), address(npc1), 0), "Good NPC");
+        assertEq(npcSpectate.getNPCVoteModel(address(spectator1), address(npc1), 0), 50);
+        assertEq(npcSpectate.getNPCVoteScene(address(spectator1), address(npc1), 0) , 40);
+        assertEq(npcSpectate.getNPCVoteChatContext(address(spectator1), address(npc1), 0), 30);
+        assertEq(npcSpectate.getNPCVoteAppearance(address(spectator1), address(npc1), 0), 20);
+        assertEq(npcSpectate.getNPCVoteCompletedJobs(address(spectator1), address(npc1), 0), 15);
+        assertEq(npcSpectate.getNPCVotePersonality(address(spectator1), address(npc1), 0), 65);
+        assertEq(npcSpectate.getNPCVoteTraining(address(spectator1), address(npc1), 0), 75);
+        assertEq(npcSpectate.getNPCVoteTokenizer(address(spectator1), address(npc1), 0), 80);
+        assertEq(npcSpectate.getNPCVoteLora(address(spectator1), address(npc1), 0), 10);
+        assertEq(npcSpectate.getNPCVoteSpriteSheet(address(spectator1), address(npc1), 0), 50);
+        assertEq(npcSpectate.getNPCVoteGlobal(address(spectator1), address(npc1), 0), 11);
+        assertEq(npcSpectate.getNPCVoteComment(address(spectator1), address(npc1), 0), "Good NPC");
 
-//   NPCLibrary.PubVote memory vote_pub = NPCLibrary.PubVote({
-//             npc: npc1,
-//             model: 5,
-//             chatContext: 3,
-//             personality: 6,
-//    pubId: 100,
-//    profileId: 25678,
-//    prompt: 8,
-//             tokenizer: 8,
-// media: 0,
-// style: 8,
-//             global: 6,
-//             weight: 0,
-//             comment: "Good NPC"
-//         });
-// npcSpectate.voteForPub(vote_pub);
+  NPCLibrary.PubVote memory vote_pub = NPCLibrary.PubVote({
+            npc: npc1,
+                   spectator: spectator1,
+            model: 5,
+            chatContext: 3,
+            personality: 6,
+   pubId: 100,
+   profileId: 25678,
+   prompt: 8,
+            tokenizer: 8,
+media: 0,
+style: 8,
+            global: 6,
+            comment: "Good Pub"
+        });
+          vm.prank(spectator1);
+npcSpectate.voteForPub(vote_pub);
+
+
+        assertEq(npcSpectate.getPubVoteModel(address(spectator1), 25678, 100, 0), 5);
+        assertEq(npcSpectate.getPubVotePrompt(address(spectator1), 25678, 100, 0) , 8);
+        assertEq(npcSpectate.getPubVoteChatContext(address(spectator1), 25678, 100, 0), 3);
+        assertEq(npcSpectate.getPubVotePersonality(address(spectator1), 25678, 100, 0), 6);
+        assertEq(npcSpectate.getPubVoteTokenizer(address(spectator1), 25678, 100, 0), 8);
+        assertEq(npcSpectate.getPubVoteMedia(address(spectator1), 25678, 100, 0), 0);
+        assertEq(npcSpectate.getPubVoteStyle(address(spectator1), 25678, 100, 0), 8);
+        assertEq(npcSpectate.getPubVoteGlobal(address(spectator1), 25678, 100, 0), 6);
+        assertEq(npcSpectate.getPubVoteComment(address(spectator1), 25678, 100, 0), "Good Pub");
+
+    }
+ function testVote_noNPC() public {
+
+        delta.mint(address(spectator1), 100);
+  NPCLibrary.PubVote memory vote_pub = NPCLibrary.PubVote({
+            npc: npc2,
+                   spectator: spectator1,
+            model: 52,
+            chatContext: 32,
+            personality: 62,
+   pubId: 230,
+   profileId: 10032,
+   prompt: 83,
+            tokenizer: 82,
+media: 10,
+style: 80,
+            global: 90,
+            comment: "Otro Pub"
+        });
+          vm.prank(spectator1);
+
+
+
+ try  npcSpectate.voteForPub(vote_pub) {
+        fail();
+      }  catch (bytes memory lowLevelData) {
+            bytes4 errorSelector = bytes4(lowLevelData);
+            assertEq(errorSelector, bytes4(INVALID_ADDRESS_ERROR));
+        }
+              
+        npcAccessControls.addNPC(npc2);
+              vm.prank(spectator1);
+        npcSpectate.voteForPub(vote_pub);
+      
+        assertEq(npcSpectate.getPubVoteModel(address(spectator1), 10032, 230, 0), 52);
+        assertEq(npcSpectate.getPubVotePrompt(address(spectator1), 10032, 230, 0) , 83);
+        assertEq(npcSpectate.getPubVoteChatContext(address(spectator1), 10032, 230, 0), 32);
+        assertEq(npcSpectate.getPubVotePersonality(address(spectator1), 10032, 230, 0), 62);
+        assertEq(npcSpectate.getPubVoteTokenizer(address(spectator1), 10032, 230, 0), 82);
+        assertEq(npcSpectate.getPubVoteMedia(address(spectator1), 10032, 230, 0), 10);
+        assertEq(npcSpectate.getPubVoteStyle(address(spectator1), 10032, 230, 0), 80);
+        assertEq(npcSpectate.getPubVoteGlobal(address(spectator1), 10032, 230, 0), 90);
+        assertEq(npcSpectate.getPubVoteComment(address(spectator1), 10032, 230, 0), "Otro Pub");
 
     }
 
+
+      
     // function testNPCPayRentAndClaim_MissedRent() public {
     //     vm.prank(admin);
     //     npcAccessControls.addNPC(npc1);

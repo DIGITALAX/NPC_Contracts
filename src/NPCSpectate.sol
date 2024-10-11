@@ -49,6 +49,17 @@ contract NPCSpectate {
         }
         _;
     }
+
+      modifier OnlyValidNPC(address _npc) {
+        if (!npcAccessControls.isNPC(_npc)) {
+            revert InvalidAddress();
+        }
+        _;
+    }
+
+
+
+
     mapping(address => mapping(address => NPCLibrary.NPCVote[]))
         private _spectatorToAllNPCVotes;
     mapping(address => mapping(uint256 => mapping(uint256 => NPCLibrary.PubVote[])))
@@ -73,7 +84,7 @@ mapping(uint256 => mapping(uint256 => bool)) private _weeklyPubRecorded;
         name = "NPCSpectate";
     }
 
-    function voteForNPC(NPCLibrary.NPCVote memory _vote) public OnlySpectator {
+    function voteForNPC(NPCLibrary.NPCVote memory _vote) public OnlySpectator OnlyValidNPC(_vote.npc) {
 
         _spectatorToAllNPCVotes[_vote.spectator][_vote.npc].push(_vote);
 _spectatorGlobalTally[_vote.spectator][_vote.npc].total = _vote.global;
@@ -102,7 +113,7 @@ _allCountVotes++;
         emit NPCVote(msg.sender, _vote.npc);
     }
 
-    function voteForPub(NPCLibrary.PubVote memory _vote) public OnlySpectator {
+    function voteForPub(NPCLibrary.PubVote memory _vote) public OnlySpectator OnlyValidNPC(_vote.npc) {
            _spectatorToAllPubVotes[_vote.spectator][_vote.profileId][_vote.pubId].push(_vote);
 _spectatorGlobalTally[_vote.spectator][_vote.npc].total = _vote.global;
 _spectatorGlobalTally[_vote.spectator][_vote.npc].weekly = _vote.global;

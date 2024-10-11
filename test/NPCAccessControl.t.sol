@@ -112,4 +112,62 @@ contract NPCAccessControlsTest is Test {
         }
     }
 
+    function testSetERC20Addresses() public {
+        address[] memory erc20Addresses = new address[](2);
+        erc20Addresses[0] = address(0x5);
+        erc20Addresses[1] = address(0x6);
+
+        vm.prank(admin);
+        accessControl.setERC20Addresses(erc20Addresses);
+
+        address[] memory returnedAddresses = accessControl
+            .getERC20TokenAddresses();
+        assertEq(returnedAddresses.length, 2);
+        assertEq(returnedAddresses[0], address(0x5));
+        assertEq(returnedAddresses[1], address(0x6));
+    }
+
+    function testSetERC721Addresses() public {
+        address[] memory erc721Addresses =  new address[](2);
+        erc721Addresses[0] = address(0x7);
+        erc721Addresses[1] = address(0x8);
+
+        vm.prank(admin);
+        accessControl.setERC721Addresses(erc721Addresses);
+
+        address[] memory returnedAddresses = accessControl
+            .getERC721TokenAddresses();
+        assertEq(returnedAddresses.length, 2);
+        assertEq(returnedAddresses[0], address(0x7));
+        assertEq(returnedAddresses[1], address(0x8));
+    }
+
+    function testSetAndGetERC721TokenValue() public {
+        address erc721Address = address(0x10);
+        uint256 weight = 20;
+        uint256 threshold = 200;
+
+        vm.prank(admin);
+        accessControl.setERC721Value(erc721Address, weight, threshold);
+
+        assertEq(accessControl.getERC721TokenWeight(erc721Address), weight);
+        assertEq(
+            accessControl.getERC721TokenThreshold(erc721Address),
+            threshold
+        );
+    }
+
+    function testSetAndGetERC20TokenValue() public {
+        address erc20Address = address(0x9);
+        uint256 weight = 10;
+        uint256 threshold = 100;
+        uint256 decimal = 18;
+
+        vm.prank(admin);
+        accessControl.setERC20Value(erc20Address, weight, threshold, decimal);
+
+        assertEq(accessControl.getERC20TokenWeight(erc20Address), weight);
+        assertEq(accessControl.getERC20TokenThreshold(erc20Address), threshold);
+        assertEq(accessControl.getERC20TokenDecimal(erc20Address), decimal);
+    }
 }
