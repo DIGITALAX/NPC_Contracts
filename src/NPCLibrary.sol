@@ -18,7 +18,6 @@ contract NPCLibrary {
         uint8 lora;
         uint8 spriteSheet;
         uint8 global;
-        uint8 weight;
     }
 
     struct NPCScore {
@@ -33,7 +32,6 @@ contract NPCLibrary {
         uint8 totalLora;
         uint8 totalSpriteSheet;
         uint8 totalGlobal;
-        uint8 totalWeight;
     }
 
     struct PubVote {
@@ -50,7 +48,6 @@ contract NPCLibrary {
         uint8 media;
         uint8 tokenizer;
         uint8 global;
-        uint8 weight;
     }
 
     struct PubScore {
@@ -64,7 +61,6 @@ contract NPCLibrary {
         uint8 totalMedia;
         uint8 totalTokenizer;
         uint8 totalGlobal;
-        uint8 totalWeight;
     }
 
     struct NPCRent {
@@ -79,8 +75,19 @@ contract NPCLibrary {
         uint256 weekly;
     }
 
-        struct NPCAU {
+    struct NPCAU {
         uint256 rent;
         uint256 claimed;
+    }
+
+    struct NPCWeight {
+     uint256   weekly;
+     uint256   total;
+    }
+
+
+    struct Token {
+     uint256   weight;
+     uint256   threshold;
     }
 }

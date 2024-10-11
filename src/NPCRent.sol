@@ -22,6 +22,7 @@ contract NPCRent {
     error InvalidAddress();
     error InsufficientTokenBalance();
     error NoAUToClaim();
+    error AlreadyClaimed();
 
     event RentPaid(address npc, uint256 auAmountClaimed, uint256 auAmountPaid);
     event RentMissed(address npc, uint256 auAmountPaid);
@@ -128,7 +129,7 @@ contract NPCRent {
                 _weeklyAUTracker[weekCounter] += _auAmountPaid;
                 _npcAUWeek[weekCounter][msg.sender] = NPCLibrary.NPCAU({
                     rent: _auAmountClaimed,
-                    paid: _auAmountPaid
+                    claimed: _auAmountPaid
                 });
 
                 emit RentPaid(msg.sender, _auAmountClaimed, _auAmountPaid);
@@ -171,7 +172,7 @@ contract NPCRent {
                 ) {
                     uint256 _auToClaim = (_npcAUWeek[_week][
                         _activeNPCs[_week][i]
-                    ].paid * _spectatorPortion[msg.sender][_week]) / 10000;
+                    ].claimed * _spectatorPortion[msg.sender][_week]) / 10000;
 
                     if (_auToClaim <= 0) {
                         revert NoAUToClaim();
@@ -193,7 +194,7 @@ contract NPCRent {
                 revert AlreadyClaimed();
             }
 
-            uint256 _auToClaim = (_npcAUWeek[_week][_npc].paid *
+            uint256 _auToClaim = (_npcAUWeek[_week][_npc].claimed *
                 _spectatorPortion[msg.sender][_week]) / 10000;
 
             if (_auToClaim <= 0) {
@@ -228,13 +229,13 @@ contract NPCRent {
 
         for (uint256 i = 0; i < _spectators.length; i++) {
             address _spectator = _spectators[i];
-
             uint256 _tokenW = _tokenWeighting(_spectator);
-
-            uint256 specWeekly = npcSpectate.getSpectatorTallyWeekly(
+            uint256 specWeekly = npcSpectate.getSpectatorWeeklyFrequency(
                 _spectator
             );
-            uint256 specTotal = npcSpectate.getSpectatorTallyTotal(_spectator);
+            uint256 specTotal = npcSpectate.getSpectatorTotalFrequency(
+                _spectator
+            );
             uint256 normalizedActivityWeight = 0;
             if (totalWeekly > 0) {
                 normalizedActivityWeight = (specWeekly * 50) / totalWeekly;
@@ -298,7 +299,7 @@ contract NPCRent {
         for (uint256 i = 0; i < _erc721Addresses.length; i++) {
             IERC721 _nft = IERC721(_erc721Addresses[i]);
             uint256 _balance = _nft.balanceOf(_spectator);
-            uint256 _nftWeight = npcAccessControls.getERC20TokenWeight(
+            uint256 _nftWeight = npcAccessControls.getERC721TokenWeight(
                 _erc721Addresses[i]
             );
 
@@ -608,13 +609,13 @@ contract NPCRent {
         address _npc,
         uint256 _week
     ) public view returns (uint256) {
-        return _npcAUWeek[_npc][_week].rent;
+        return _npcAUWeek[_week][_npc].rent;
     }
 
     function getNPCAuClaimedByWeek(
         address _npc,
         uint256 _week
     ) public view returns (uint256) {
-        return _npcAUWeek[_npc][_week].claimed;
+        return _npcAUWeek[_week][_npc].claimed;
     }
 }
