@@ -272,6 +272,282 @@ style: 80,
 
     }
 
+    function testVote_withERC721() public {
+
+        genesis.mint(address(spectator2), 1);
+  NPCLibrary.PubVote memory vote_pub = NPCLibrary.PubVote({
+            npc: npc2,
+                   spectator: spectator2,
+            model: 52,
+            chatContext: 32,
+            personality: 62,
+   pubId: 10,
+   profileId: 21050,
+   prompt: 83,
+            tokenizer: 82,
+media: 10,
+style: 80,
+            global: 90,
+            comment: "Otro Pub1"
+        });
+
+              
+        npcAccessControls.addNPC(npc2);
+              vm.prank(spectator2);
+        npcSpectate.voteForPub(vote_pub);
+      
+        assertEq(npcSpectate.getPubVoteModel(address(spectator2), 21050, 10, 0), 52);
+        assertEq(npcSpectate.getPubVotePrompt(address(spectator2), 21050, 10, 0) , 83);
+        assertEq(npcSpectate.getPubVoteChatContext(address(spectator2), 21050, 10, 0), 32);
+        assertEq(npcSpectate.getPubVotePersonality(address(spectator2), 21050, 10, 0), 62);
+        assertEq(npcSpectate.getPubVoteTokenizer(address(spectator2), 21050, 10, 0), 82);
+        assertEq(npcSpectate.getPubVoteMedia(address(spectator2), 21050, 10, 0), 10);
+        assertEq(npcSpectate.getPubVoteStyle(address(spectator2), 21050, 10, 0), 80);
+        assertEq(npcSpectate.getPubVoteGlobal(address(spectator2), 21050, 10, 0), 90);
+        assertEq(npcSpectate.getPubVoteComment(address(spectator2), 21050, 10, 0), "Otro Pub1");
+
+    }
+
+
+
+function makeVotes() public {
+        npcAccessControls.addNPC(npc1);
+        npcAccessControls.addNPC(npc2);
+
+        delta.mint(address(spectator1), 80);
+        mona.mint(address(spectator2), 100);
+
+  NPCLibrary.PubVote memory vote_pub = NPCLibrary.PubVote({
+            npc: npc1,
+                   spectator: spectator1,
+            model: 52,
+            chatContext: 32,
+            personality: 62,
+   pubId: 230,
+   profileId: 10032,
+   prompt: 83,
+            tokenizer: 82,
+media: 10,
+style: 80,
+            global: 90,
+            comment: "Otro Pub"
+        });
+
+
+          vm.prank(spectator1);
+        npcSpectate.voteForPub(vote_pub);
+
+
+  NPCLibrary.PubVote memory vote_pub_2 = NPCLibrary.PubVote({
+            npc: npc1,
+                   spectator: spectator2,
+            model: 20,
+            chatContext: 99,
+            personality: 62,
+   pubId: 100,
+   profileId: 25678,
+   prompt: 80,
+            tokenizer: 20,
+media: 0,
+style: 80,
+            global: 70,
+            comment: "Good Pub"
+        });
+          vm.prank(spectator2);
+        npcSpectate.voteForPub(vote_pub_2);
+
+
+
+  NPCLibrary.PubVote memory vote_pub_3 = NPCLibrary.PubVote({
+            npc: npc2,
+                   spectator: spectator1,
+            model: 52,
+            chatContext: 22,
+            personality: 62,
+   pubId: 230,
+   profileId: 10032,
+   prompt:20,
+            tokenizer: 20,
+media: 10,
+style: 88,
+            global: 81,
+            comment: "Otro Pub"
+        });
+
+
+          vm.prank(spectator1);
+        npcSpectate.voteForPub(vote_pub_3);
+
+  NPCLibrary.PubVote memory vote_pub_4 = NPCLibrary.PubVote({
+            npc: npc2,
+                   spectator: spectator2,
+            model: 70,
+            chatContext: 19,
+            personality: 82,
+   pubId: 102,
+   profileId: 25788,
+   prompt: 20,
+            tokenizer: 20,
+media: 20,
+style: 80,
+            global: 50,
+            comment: "Good Pub"
+        });
+          vm.prank(spectator2);
+        npcSpectate.voteForPub(vote_pub_4);
+
+  NPCLibrary.NPCVote memory vote_npc = NPCLibrary.NPCVote({
+         npc: npc1,
+         spectator: spectator1,
+            model: 50,
+            scene: 40,
+            chatContext: 30,
+            appearance: 20,
+            completedJobs: 15,
+            personality: 65,
+            training: 75,
+            tokenizer: 80,
+            lora: 10,
+            spriteSheet: 50,
+            global: 11,
+            comment: "Good NPC"
+        });
+          vm.prank(spectator1);
+        npcSpectate.voteForNPC(vote_npc);
+
+  NPCLibrary.NPCVote memory vote_npc_2 = NPCLibrary.NPCVote({
+         npc: npc1,
+         spectator: spectator2,
+            model: 40,
+            scene: 23,
+            chatContext: 29,
+            appearance: 20,
+            completedJobs: 12,
+            personality: 62,
+            training: 49,
+            tokenizer: 54,
+            lora: 13,
+            spriteSheet: 52,
+            global: 80,
+            comment: "Otro NPC"
+        });
+          vm.prank(spectator2);
+        npcSpectate.voteForNPC(vote_npc_2);
+
+
+  NPCLibrary.NPCVote memory vote_npc_3 = NPCLibrary.NPCVote({
+         npc: npc2,
+         spectator: spectator1,
+            model: 50,
+            scene: 36,
+            chatContext: 36,
+            appearance: 36,
+            completedJobs: 15,
+            personality: 65,
+            training: 36,
+            tokenizer: 36,
+            lora: 10,
+            spriteSheet: 50,
+            global: 79,
+            comment: "Good NPC"
+        });
+          vm.prank(spectator1);
+        npcSpectate.voteForNPC(vote_npc_3);
+
+  NPCLibrary.NPCVote memory vote_npc_4 = NPCLibrary.NPCVote({
+         npc: npc2,
+         spectator: spectator2,
+            model: 40,
+            scene: 33,
+            chatContext: 33,
+            appearance: 33,
+            completedJobs: 12,
+            personality: 62,
+            training: 45,
+            tokenizer: 23,
+            lora: 13,
+            spriteSheet: 52,
+            global: 27,
+            comment: "Otro NPC"
+        });
+          vm.prank(spectator2);
+        npcSpectate.voteForNPC(vote_npc_4);
+
+
+
+}
+
+function testStatistics() public {
+  makeVotes();
+
+        address[] memory spectators = new address[](2);
+        spectators[0] =    address(spectator1);
+        spectators[1] = address(spectator2);
+
+        address[] memory npcs = new address[](2);
+        npcs[0] = address(npc1);
+        npcs[1] = address(npc2);
+
+    assertEq(npcSpectate.getWeeklySpectators(), spectators);
+    assertEq(npcSpectate.getWeeklyNPCs(), npcs);
+    assertEq(npcSpectate.getAllTotalFrequency(), 8);
+    assertEq(npcSpectate.getAllWeeklyFrequency(), 8);
+
+        assertEq(npcSpectate.getSpectatorPubWeeklyLocalFrequency(spectator1, 10032, 230), 2);
+          assertEq(npcSpectate.getSpectatorPubWeeklyLocalFrequency(spectator2, 25678, 100), 1);
+            assertEq(npcSpectate.getSpectatorPubWeeklyLocalFrequency(spectator2, 25788, 102), 1);
+
+                   assertEq(npcSpectate.getSpectatorPubTotalLocalFrequency(spectator1, 10032, 230), 2);
+          assertEq(npcSpectate.getSpectatorPubTotalLocalFrequency(spectator2, 25678, 100), 1);
+            assertEq(npcSpectate.getSpectatorPubTotalLocalFrequency(spectator2, 25788, 102), 1);
+
+                    assertEq(npcSpectate.getGlobalScoreNPCTallyTotal(spectator1,npc1), 101);
+                                  assertEq(npcSpectate.getGlobalScoreNPCTallyWeekly(spectator1,npc1), 101);
+          assertEq(npcSpectate.getGlobalScoreNPCTallyTotal(spectator2, npc1), 150);
+              assertEq(npcSpectate.getGlobalScoreNPCTallyWeekly(spectator2, npc1), 150);
+                 assertEq(npcSpectate.getGlobalScoreNPCTallyTotal(spectator1,npc2), 160);
+                 assertEq(npcSpectate.getGlobalScoreNPCTallyWeekly(spectator1,npc2), 160);
+          assertEq(npcSpectate.getGlobalScoreNPCTallyTotal(spectator2, npc2), 77);
+            assertEq(npcSpectate.getGlobalScoreNPCTallyWeekly(spectator2, npc2), 77);
+
+                  assertEq(npcSpectate.getSpectatorWeeklyFrequency(spectator1), 4);
+              assertEq(npcSpectate.getSpectatorTotalFrequency(spectator1), 4);
+                      assertEq(npcSpectate.getSpectatorWeeklyFrequency(spectator2), 4);
+              assertEq(npcSpectate.getSpectatorTotalFrequency(spectator2), 4);
+
+                     assertEq(npcSpectate.getNPCWeeklyFrequency(npc1), 4);
+              assertEq(npcSpectate.getNPCTotalFrequency(npc1), 4);
+                      assertEq(npcSpectate.getNPCWeeklyFrequency(npc2), 4);
+              assertEq(npcSpectate.getNPCTotalFrequency(npc2), 4);
+
+                             assertEq(npcSpectate.getSpectatorNPCTotalWeeklyFrequency(spectator1, npc1), 1);
+              assertEq(npcSpectate.getSpectatorNPCTotalLocalFrequency(spectator1, npc1), 1);
+                     assertEq(npcSpectate.getSpectatorNPCTotalWeeklyFrequency(spectator1, npc2), 1);
+              assertEq(npcSpectate.getSpectatorNPCTotalLocalFrequency(spectator1, npc2), 1);
+                     assertEq(npcSpectate.getSpectatorNPCTotalWeeklyFrequency(spectator2, npc1), 1);
+              assertEq(npcSpectate.getSpectatorNPCTotalLocalFrequency(spectator2, npc1), 1);
+                 assertEq(npcSpectate.getSpectatorNPCTotalWeeklyFrequency(spectator2, npc2), 1);
+              assertEq(npcSpectate.getSpectatorNPCTotalLocalFrequency(spectator2, npc2), 1);
+
+
+                  assertEq(npcSpectate.getSpectatorPubWeeklyGlobalFrequency(spectator1), 2);
+              assertEq(npcSpectate.getSpectatorPubTotalGlobalFrequency(spectator1), 2);
+                      assertEq(npcSpectate.getSpectatorPubWeeklyGlobalFrequency(spectator2), 2);
+              assertEq(npcSpectate.getSpectatorPubTotalGlobalFrequency(spectator2), 2);
+
+                     assertEq(npcSpectate.getSpectatorNPCWeeklyGlobalFrequency(spectator1), 2);
+              assertEq(npcSpectate.getSpectatorNPCTotalGlobalFrequency(spectator1), 2);
+                      assertEq(npcSpectate.getSpectatorNPCWeeklyGlobalFrequency(spectator2), 2);
+              assertEq(npcSpectate.getSpectatorNPCTotalGlobalFrequency(spectator2), 2);
+} 
+
+function testWeeklyWeights() public {
+
+  makeVotes();
+
+npcRent.calculateWeeklySpectatorWeights();
+npcRent.calculateWeeklyNPCWeights();
+}
 
       
     // function testNPCPayRentAndClaim_MissedRent() public {

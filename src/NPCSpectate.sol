@@ -87,8 +87,8 @@ mapping(uint256 => mapping(uint256 => bool)) private _weeklyPubRecorded;
     function voteForNPC(NPCLibrary.NPCVote memory _vote) public OnlySpectator OnlyValidNPC(_vote.npc) {
 
         _spectatorToAllNPCVotes[_vote.spectator][_vote.npc].push(_vote);
-_spectatorGlobalTally[_vote.spectator][_vote.npc].total = _vote.global;
-_spectatorGlobalTally[_vote.spectator][_vote.npc].weekly = _vote.global;
+_spectatorGlobalTally[_vote.spectator][_vote.npc].total += _vote.global;
+_spectatorGlobalTally[_vote.spectator][_vote.npc].weekly += _vote.global;
         _spectatorNPCLocalFrequency[_vote.spectator][_vote.npc].total += 1;
         _spectatorNPCGlobalFrequency[_vote.spectator].total += 1;
         _npcFrequency[_vote.npc].total += 1;
@@ -115,8 +115,8 @@ _allCountVotes++;
 
     function voteForPub(NPCLibrary.PubVote memory _vote) public OnlySpectator OnlyValidNPC(_vote.npc) {
            _spectatorToAllPubVotes[_vote.spectator][_vote.profileId][_vote.pubId].push(_vote);
-_spectatorGlobalTally[_vote.spectator][_vote.npc].total = _vote.global;
-_spectatorGlobalTally[_vote.spectator][_vote.npc].weekly = _vote.global;
+_spectatorGlobalTally[_vote.spectator][_vote.npc].total += _vote.global;
+_spectatorGlobalTally[_vote.spectator][_vote.npc].weekly += _vote.global;
         _spectatorPubLocalFrequency[_vote.spectator][_vote.profileId][_vote.pubId].total += 1;
         _spectatorPubGlobalFrequency[_vote.spectator].total += 1;
         _npcFrequency[_vote.npc].total += 1;
@@ -411,14 +411,6 @@ _weeklyCountVotes = 0;
         uint256 _pubId
     ) public view returns (uint256) {
         return _spectatorPubLocalFrequency[_spectator][_profileId][_pubId].weekly;
-    }
-
-    function getWeeklySpectatorsCount()public view returns (uint256) {
-        return _spectators.length;
-    }
-    
-    function getWeeklyNPCsCount() public view returns (uint256) {
-        return _npcs.length;
     }
 
 function getAllWeeklyFrequency() public view returns (uint256) {
