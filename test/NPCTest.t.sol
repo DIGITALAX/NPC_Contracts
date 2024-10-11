@@ -316,6 +316,8 @@ function makeVotes() public {
 
         delta.mint(address(spectator1), 80);
         mona.mint(address(spectator2), 100);
+        genesis.mint(address(spectator1), 1);
+        fashion.mint(address(spectator2), 2);
 
   NPCLibrary.PubVote memory vote_pub = NPCLibrary.PubVote({
             npc: npc1,
@@ -541,48 +543,82 @@ function testStatistics() public {
               assertEq(npcSpectate.getSpectatorNPCTotalGlobalFrequency(spectator2), 2);
 } 
 
-function testWeeklyWeights() public {
+function testWeeklyWeights_spectator() public {
 
   makeVotes();
 
 npcRent.calculateWeeklySpectatorWeights();
-npcRent.calculateWeeklyNPCWeights();
+
+     assertEq(npcRent.getSpectatorUnnormalizedWeightByWeek(spectator1, 0), 2000000000000000000045);
+     assertEq(npcRent.getSpectatorUnnormalizedWeightByWeek(spectator2, 0), 5000000000000000000025);
+
+     assertEq(npcRent.getSpectatorWeightByWeek(spectator1, 0), 28);
+     assertEq(npcRent.getSpectatorWeightByWeek(spectator2, 0), 72);
+
+   assertEq(npcRent.getSpectatorPortion(spectator1, 0), 2800);
+     assertEq(npcRent.getSpectatorPortion(spectator2, 0), 7200);
+
+   assertEq(npcRent.getSpectatorUnnormalizedCurrentWeekWeight(spectator1), 2000000000000000000045);
+     assertEq(npcRent.getSpectatorUnnormalizedCurrentWeekWeight(spectator2), 5000000000000000000025);
+     
+        assertEq(npcRent.getSpectatorCurrentWeekWeight(spectator1), 28);
+     assertEq(npcRent.getSpectatorCurrentWeekWeight(spectator2), 72);
+
 }
 
-      
-    // function testNPCPayRentAndClaim_MissedRent() public {
-    //     vm.prank(admin);
-    //     npcAccessControls.addNPC(npc1);
+function testWeeklyWeights_npc() public { 
+  makeVotes();
+npcRent.calculateWeeklySpectatorWeights();
+  npcRent.calculateWeeklyNPCWeights();
 
-    //     vm.prank(admin);
-    //     npcRent.setWeeklyAUAllowance(1000);
+  assertEq(npcRent.getNPCUnnormalizedWeightByWeekWeekly(npc1, 0), 5656);
+     assertEq(npcRent.getNPCUnnormalizedWeightByWeekWeekly(npc2, 0), 11088);
 
-    //     vm.warp(block.timestamp + 1 weeks + 4 days);
+      assertEq(npcRent.getNPCUnnormalizedWeightByWeekTotal(npc1, 0), 5656);
+     assertEq(npcRent.getNPCUnnormalizedWeightByWeekTotal(npc2, 0), 11088);
 
-    //     assertEq(au.totalSupply(), 0);
+      assertEq(npcRent.getNPCCurrentUnnormalizedWeightedScoreWeekly(npc1), 5656);
+     assertEq(npcRent.getNPCCurrentUnnormalizedWeightedScoreWeekly(npc2), 11088);
 
-    //     vm.prank(npc1);
-    //     npcRent.NPCPayRentAndClaim();
+      assertEq(npcRent.getNPCCurrentUnnormalizedWeightedScoreTotal(npc1), 5656);
+     assertEq(npcRent.getNPCCurrentUnnormalizedWeightedScoreTotal(npc2), 11088);
 
-    //     assertEq(au.totalSupply(), 1000);
-    //     assertEq(au.balanceOf(npc1), 0);
-    //     assertEq(au.balanceOf(address(npcRent)), 1000);
 
-    //     vm.expectEmit(true, true, false, true);
-    //     assertEq(au.balanceOf(address(npcRent)), 1000);
-    // }
+         assertEq(npcRent.getNPCWeightByWeekWeekly(npc1,0), 33);
+     assertEq(npcRent.getNPCWeightByWeekWeekly(npc2,0), 66);
 
-    // function testNPCPayRentAndClaim_CountersUpdated() public {
-    //     vm.prank(admin);
-    //     npcAccessControls.addNPC(npc1);
 
-    //     vm.prank(admin);
-    //     npcRent.setWeeklyAUAllowance(1000);
-    //     vm.warp(block.timestamp + 1 weeks);
+         assertEq(npcRent.getNPCWeightByWeekTotal(npc1,0), 33);
+     assertEq(npcRent.getNPCWeightByWeekTotal(npc2,0), 66);
 
-    //     vm.prank(npc1);
-    //     npcRent.NPCPayRentAndClaim();
-    //     assertEq(npcRent.getNPCLastRentClock(npc1), block.timestamp);
-    //     assertEq(npcRent.getNPCAUOwed(npc1), 910);
-    // }
+        assertEq(npcRent.getNPCCurrentWeightedScoreWeekly(npc1), 33);
+     assertEq(npcRent.getNPCCurrentWeightedScoreWeekly(npc2), 66);
+
+      assertEq(npcRent.getNPCCurrentWeightedScoreTotal(npc1), 33);
+     assertEq(npcRent.getNPCCurrentWeightedScoreTotal(npc2), 66);
+
+
+      assertEq(npcRent.getNPCPortion(npc1,0), 3333);
+     assertEq(npcRent.getNPCPortion(npc2,0), 6666);
+
+}
+
+function testClaimNPC() public {
+
+
+}
+
+function testClaimSpectator() public {
+
+  
+}
+
+function testDistributeAU() public {
+  
+}
+
+function testWeeklyClocks() public {
+  
+}
+
 }

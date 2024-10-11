@@ -7,6 +7,7 @@ import "./AU.sol";
 import "./NPCSpectate.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {console} from "forge-std/console.sol";
 
 contract NPCRent {
     NPCAccessControls public npcAccessControls;
@@ -264,6 +265,23 @@ contract NPCRent {
             _spectatorWeeklyWeight[_spectator] = _tokenW;
         }
 
+        if (_totalGlobalWeightNormalized != 100) {
+            uint256 difference = 100 - _totalGlobalWeightNormalized;
+            address maxWeightSpectator;
+            uint256 maxWeight = 0;
+            for (uint256 i = 0; i < _spectators.length; i++) {
+                address _spectator = _spectators[i];
+                if (_spectatorWeeklyWeight[_spectator] > maxWeight) {
+                    maxWeight = _spectatorWeeklyWeight[_spectator];
+                    maxWeightSpectator = _spectator;
+                }
+            }
+            _spectatorWeeklyWeight[maxWeightSpectator] += difference;
+            _spectatorAllWeights[maxWeightSpectator][
+                _spectatorAllWeights[maxWeightSpectator].length - 1
+            ] += difference;
+        }
+
         _calculateSpectatorPortions();
 
         emit SpectatorWeightsCalculated(
@@ -335,7 +353,6 @@ contract NPCRent {
                     npcSpectate.getGlobalScoreNPCTallyTotal(_spectator, _npc) *
                     _spectatorWeeklyWeight[_spectator];
             }
-
             NPCLibrary.NPCWeight memory _weight = NPCLibrary.NPCWeight({
                 weekly: _weeklyGlobal,
                 total: _totalGlobal
@@ -363,10 +380,13 @@ contract NPCRent {
                     _totalNPCWeightGlobal;
             }
 
-            _npcWeeklyWeight[_npc] = NPCLibrary.NPCWeight({
+            NPCLibrary.NPCWeight memory _weight = NPCLibrary.NPCWeight({
                 weekly: _weekly,
                 total: _total
             });
+
+            _npcWeeklyWeight[_npc] = _weight;
+            _npcAllWeights[_npc].push(_weight);
         }
 
         _calculateNPCPortions();
