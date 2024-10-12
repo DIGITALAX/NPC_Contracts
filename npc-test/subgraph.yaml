@@ -1,0 +1,32 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: NPCSpectate
+    network: polygon-amoy
+    source:
+      address: "0x6B92Fb260e98dAEb1c4C613b16CC9D4bc5d6F184"
+      abi: NPCSpectate
+      startBlock: 13066114
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - NPCVote
+        - PubVote
+        - WeeklyReset
+      abis:
+        - name: NPCSpectate
+          file: ./abis/NPCSpectate.json
+      eventHandlers:
+        - event: NPCVote(address,address)
+          handler: handleNPCVote
+        - event: PubVote(address,uint256,uint256)
+          handler: handlePubVote
+        - event: WeeklyReset(address)
+          handler: handleWeeklyReset
+      file: ./src/npc-spectate.ts

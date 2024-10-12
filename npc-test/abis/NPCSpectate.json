@@ -1,0 +1,588 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_npcAccessControlsAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  { "inputs": [], "name": "InsufficientTokenBalance", "type": "error" },
+  { "inputs": [], "name": "InvalidAddress", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "spectator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "npc",
+        "type": "address"
+      }
+    ],
+    "name": "NPCVote",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "spectator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "profileId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pubId",
+        "type": "uint256"
+      }
+    ],
+    "name": "PubVote",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "reseter",
+        "type": "address"
+      }
+    ],
+    "name": "WeeklyReset",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "getAllTotalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllWeeklyFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" }
+    ],
+    "name": "getGlobalScoreNPCTallyTotal",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" }
+    ],
+    "name": "getGlobalScoreNPCTallyWeekly",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_npc", "type": "address" }
+    ],
+    "name": "getNPCTotalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteAppearance",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteChatContext",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteComment",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteCompletedJobs",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteGlobal",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteLora",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteModel",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVotePersonality",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteScene",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteSpriteSheet",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteTokenizer",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getNPCVoteTraining",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_npc", "type": "address" }
+    ],
+    "name": "getNPCWeeklyFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteChatContext",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteComment",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteGlobal",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteMedia",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteModel",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteNPC",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVotePersonality",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVotePrompt",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteStyle",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+    ],
+    "name": "getPubVoteTokenizer",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" }
+    ],
+    "name": "getSpectatorNPCTotalGlobalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" }
+    ],
+    "name": "getSpectatorNPCTotalLocalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "address", "name": "_npc", "type": "address" }
+    ],
+    "name": "getSpectatorNPCTotalWeeklyFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" }
+    ],
+    "name": "getSpectatorNPCWeeklyGlobalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" }
+    ],
+    "name": "getSpectatorPubTotalGlobalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" }
+    ],
+    "name": "getSpectatorPubTotalLocalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" }
+    ],
+    "name": "getSpectatorPubWeeklyGlobalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" },
+      { "internalType": "uint256", "name": "_profileId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_pubId", "type": "uint256" }
+    ],
+    "name": "getSpectatorPubWeeklyLocalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" }
+    ],
+    "name": "getSpectatorTotalFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_spectator", "type": "address" }
+    ],
+    "name": "getSpectatorWeeklyFrequency",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWeeklyNPCs",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWeeklySpectators",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "npcAccessControls",
+    "outputs": [
+      {
+        "internalType": "contract NPCAccessControls",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "comment", "type": "string" },
+          { "internalType": "address", "name": "npc", "type": "address" },
+          { "internalType": "address", "name": "spectator", "type": "address" },
+          { "internalType": "uint8", "name": "model", "type": "uint8" },
+          { "internalType": "uint8", "name": "scene", "type": "uint8" },
+          { "internalType": "uint8", "name": "chatContext", "type": "uint8" },
+          { "internalType": "uint8", "name": "appearance", "type": "uint8" },
+          { "internalType": "uint8", "name": "completedJobs", "type": "uint8" },
+          { "internalType": "uint8", "name": "personality", "type": "uint8" },
+          { "internalType": "uint8", "name": "training", "type": "uint8" },
+          { "internalType": "uint8", "name": "tokenizer", "type": "uint8" },
+          { "internalType": "uint8", "name": "lora", "type": "uint8" },
+          { "internalType": "uint8", "name": "spriteSheet", "type": "uint8" },
+          { "internalType": "uint8", "name": "global", "type": "uint8" }
+        ],
+        "internalType": "struct NPCLibrary.NPCVote",
+        "name": "_vote",
+        "type": "tuple"
+      }
+    ],
+    "name": "voteForNPC",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "comment", "type": "string" },
+          { "internalType": "address", "name": "npc", "type": "address" },
+          { "internalType": "address", "name": "spectator", "type": "address" },
+          { "internalType": "uint256", "name": "profileId", "type": "uint256" },
+          { "internalType": "uint256", "name": "pubId", "type": "uint256" },
+          { "internalType": "uint8", "name": "model", "type": "uint8" },
+          { "internalType": "uint8", "name": "chatContext", "type": "uint8" },
+          { "internalType": "uint8", "name": "prompt", "type": "uint8" },
+          { "internalType": "uint8", "name": "personality", "type": "uint8" },
+          { "internalType": "uint8", "name": "style", "type": "uint8" },
+          { "internalType": "uint8", "name": "media", "type": "uint8" },
+          { "internalType": "uint8", "name": "tokenizer", "type": "uint8" },
+          { "internalType": "uint8", "name": "global", "type": "uint8" }
+        ],
+        "internalType": "struct NPCLibrary.PubVote",
+        "name": "_vote",
+        "type": "tuple"
+      }
+    ],
+    "name": "voteForPub",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "weeklyClock",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "weeklyReset",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

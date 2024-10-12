@@ -1,0 +1,26 @@
+type NPCVote @entity(immutable: true) {
+  id: Bytes!
+  spectator: Bytes! # address
+  npc: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PubVote @entity(immutable: true) {
+  id: Bytes!
+  spectator: Bytes! # address
+  profileId: BigInt! # uint256
+  pubId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type WeeklyReset @entity(immutable: true) {
+  id: Bytes!
+  reseter: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
