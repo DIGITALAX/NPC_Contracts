@@ -164,6 +164,9 @@ contract NPCRent {
     }
 
     function spectatorClaimAU(address _npc, bool _all, uint256 _week) public {
+
+        // añade para todas las semanas?
+
         if (_all) {
             uint256 _amountClaimed = 0;
             for (uint256 i; i < _activeNPCs[_week].length; i++) {

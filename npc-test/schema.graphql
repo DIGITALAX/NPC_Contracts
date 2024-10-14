@@ -1,25 +1,156 @@
 type NPCVote @entity(immutable: true) {
   id: Bytes!
-  spectator: Bytes! # address
+  spectator: [Bytes!] # address
   npc: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  blockNumber: [BigInt!]
+  blockTimestamp: [BigInt!]
+  transactionHash: [Bytes!]
+  comment: [String!]
+  model: [BigInt!]
+  chatContext: [BigInt!]
+  personality: [BigInt!]
+  tokenizer: [BigInt!]
+  scene: [BigInt!]
+  appearance: [BigInt!]
+  completedJobs: [BigInt!]
+  training: [BigInt!]
+  lora: [BigInt!]
+  spriteSheet: [BigInt!]
+  global: [BigInt!]
 }
 
 type PubVote @entity(immutable: true) {
   id: Bytes!
-  spectator: Bytes! # address
-  profileId: BigInt! # uint256
-  pubId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  spectator: [Bytes!] # address
+  profileId: [BigInt!] # uint256
+  pubId: [BigInt!] # uint256
+  blockNumber: [BigInt!]
+  blockTimestamp: [BigInt!]
+  transactionHash: [Bytes!]
+  comment: [String!]
+  npc: [Bytes!]
+  model: [BigInt!]
+  chatContext: [BigInt!]
+  prompt: [BigInt!]
+  style: [BigInt!]
+  personality: [BigInt!]
+  tokenizer: [BigInt!]
+  media: [BigInt!]
+  global: [BigInt!]
 }
 
 type WeeklyReset @entity(immutable: true) {
   id: Bytes!
   reseter: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type MissedRentDistributed @entity(immutable: true) {
+  id: Bytes!
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NPCWeightsCalculated @entity(immutable: true) {
+  id: Bytes!
+  npc: Bytes! # address
+  globalWeight: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RentMissed @entity(immutable: true) {
+  id: Bytes!
+  npc: Bytes! # address
+  auAmountPaid: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NPCInfo @entity(immutable: false) {
+  id: Bytes!
+  npc: Bytes!
+  auEarnedTotal: BigInt!
+  auPaidTotal: BigInt!
+  rentMissedTotal: BigInt!
+  activeJobs: BigInt!
+  currentWeeklyScore: BigInt!
+  currentGlobalScore: BigInt!
+  allGlobalScore: BigInt!
+  activeWeeks: BigInt!
+}
+
+type LeaderboardNPC @entity(immutable: false) {
+  id: Bytes!
+  npc: Bytes!
+  totalScore: BigInt!
+  weeklyScore: BigInt!
+}
+
+type LeaderboardSpectator @entity(immutable: false) {
+  id: Bytes!
+  spectator: Bytes!
+  totalScore: BigInt!
+  weeklyScore: BigInt!
+}
+
+type RentPaidNPC @entity(immutable: false) {
+  id: Bytes!
+  npc: Bytes!
+  blockNumber: [BigInt!]
+  blockTimestamp: [BigInt!]
+  transactionHash: [Bytes!]
+  amount: [BigInt!]
+}
+
+type SpectatorInfo @entity(immutable: false) {
+  id: Bytes!
+  spectator: Bytes!
+  auEarnedTotal: BigInt!
+  weeklyPortion: BigInt!
+  auClaimedTotal: BigInt!
+  auUnclaimedTotal: BigInt!
+  weekWeight: BigInt!
+}
+
+type RentPaid @entity(immutable: true) {
+  id: Bytes!
+  npc: Bytes! # address
+  auAmountClaimed: BigInt! # uint256
+  auAmountPaid: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SpectatorClaimed @entity(immutable: true) {
+  id: Bytes!
+  spectator: Bytes! # address
+  auAmountClaimed: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SpectatorClaimedAll @entity(immutable: true) {
+  id: Bytes!
+  spectator: Bytes! # address
+  auAmountClaimed: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SpectatorWeightsCalculated @entity(immutable: true) {
+  id: Bytes!
+  npc: Bytes! # address
+  globalWeight: BigInt! # uint256
+  globalWeightNormalized: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

@@ -3,6 +3,9 @@
     "NPCSpectate": {
       "address": "0x6B92Fb260e98dAEb1c4C613b16CC9D4bc5d6F184",
       "startBlock": 13066114
+    },
+    "NPCRent": {
+      "address": "0x7fb6f7EF8dfFb0bB8d82b64E6b90BcC5162621F6"
     }
   }
 }
