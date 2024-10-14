@@ -62,6 +62,7 @@ export function handleNPCWeightsCalculated(
   );
 
   const npcs = spectate.getWeeklyNPCs();
+  const semana = datos.weekCounter();
 
   if (npcs) {
     for (let i = 0; i < npcs.length; i++) {
@@ -83,6 +84,13 @@ export function handleNPCWeightsCalculated(
 
       npcEntity.totalScore = datos.getNPCCurrentWeightedScoreWeekly(npcs[i]);
       npcEntity.weeklyScore = datos.getNPCCurrentWeightedScoreWeekly(npcs[i]);
+
+      let totalAU = BigInt.fromI32(0);
+
+      for (let j = 0; j < semana.toI32(); j++) {
+        totalAU.plus(datos.getNPCAuClaimedByWeek(npcs[i], BigInt.fromI32(j)));
+      }
+      npcEntity.totalAU = totalAU;
 
       npcEntity.save();
     }
@@ -351,6 +359,8 @@ export function handleSpectatorWeightsCalculated(
           datos.getSpectatorWeightByWeek(spectators[i], BigInt.fromI32(j))
         );
       }
+
+      spectatorEntity.totalAU = datos.getSpectatorAUClaimed(spectators[i]);
 
       spectatorEntity.totalScore = totalScore;
       spectatorEntity.weeklyScore = datos.getSpectatorCurrentWeekWeight(

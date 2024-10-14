@@ -90,6 +90,7 @@ type LeaderboardNPC @entity(immutable: false) {
   npc: Bytes!
   totalScore: BigInt!
   weeklyScore: BigInt!
+  totalAU: BigInt!
 }
 
 type LeaderboardSpectator @entity(immutable: false) {
@@ -97,6 +98,7 @@ type LeaderboardSpectator @entity(immutable: false) {
   spectator: Bytes!
   totalScore: BigInt!
   weeklyScore: BigInt!
+  totalAU: BigInt!
 }
 
 type RentPaidNPC @entity(immutable: false) {
