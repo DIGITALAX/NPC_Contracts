@@ -164,32 +164,30 @@ contract NPCRent {
     }
 
     function spectatorClaimAU(address _npc, bool _all, uint256 _week) public {
-
-        // añade para todas las semanas?
-
         if (_all) {
             uint256 _amountClaimed = 0;
-            for (uint256 i; i < _activeNPCs[_week].length; i++) {
-                if (
-                    !_spectatorAUWeek[msg.sender][_activeNPCs[_week][i]][_week]
-                ) {
-                    uint256 _auToClaim = (_npcAUWeek[_week][
-                        _activeNPCs[_week][i]
-                    ].claimed * _spectatorPortion[msg.sender][_week]) / 10000;
+            for (uint256 j = 0; j < weekCounter; j++) {
+                for (uint256 i; i < _activeNPCs[j].length; i++) {
+                    if (!_spectatorAUWeek[msg.sender][_activeNPCs[j][i]][j]) {
+                        uint256 _auToClaim = (_npcAUWeek[j][_activeNPCs[j][i]]
+                            .claimed * _spectatorPortion[msg.sender][j]) /
+                            10000;
 
-                    if (_auToClaim >= 0) {
-                        _spectatorAUWeek[msg.sender][_activeNPCs[_week][i]][
-                            _week
-                        ] = true;
+                        if (_auToClaim >= 0) {
+                            _spectatorAUWeek[msg.sender][_activeNPCs[j][i]][
+                                j
+                            ] = true;
 
-                        _spectatorAUClaimed[msg.sender] += _auToClaim;
-                        _spectatorWeeklyAUClaim[msg.sender][
-                            _week
-                        ] += _auToClaim;
-                        _amountClaimed += _auToClaim;
+                            _spectatorAUClaimed[msg.sender] += _auToClaim;
+                            _spectatorWeeklyAUClaim[msg.sender][
+                                j
+                            ] += _auToClaim;
+                            _amountClaimed += _auToClaim;
+                        }
                     }
                 }
             }
+
             if (_amountClaimed > 0) {
                 au.transfer(msg.sender, _amountClaimed);
                 emit SpectatorClaimedAll(msg.sender, _amountClaimed);
