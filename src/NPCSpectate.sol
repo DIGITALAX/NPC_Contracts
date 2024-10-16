@@ -19,6 +19,7 @@ contract NPCSpectate {
 
     error InsufficientTokenBalance();
     error InvalidAddress();
+    error SpectatorInvalid();
 
     event WeeklyReset(address reseter);
     event NPCVote(address spectator, address npc);
@@ -44,7 +45,7 @@ contract NPCSpectate {
 
 
     modifier OnlySpectator() {
-        if (!_holdsTokens()) {
+        if (!_holdsTokens() ) {
             revert InsufficientTokenBalance();
         }
         _;
@@ -86,6 +87,10 @@ mapping(uint256 => mapping(uint256 => bool)) private _weeklyPubRecorded;
 
     function voteForNPC(NPCLibrary.NPCVote memory _vote) public OnlySpectator OnlyValidNPC(_vote.npc) {
 
+        if (msg.sender != _vote.spectator) {
+revert SpectatorInvalid();
+        }
+
         _spectatorToAllNPCVotes[_vote.spectator][_vote.npc].push(_vote);
 _spectatorGlobalTally[_vote.spectator][_vote.npc].total += _vote.global;
 _spectatorGlobalTally[_vote.spectator][_vote.npc].weekly += _vote.global;
@@ -114,6 +119,10 @@ _allCountVotes++;
     }
 
     function voteForPub(NPCLibrary.PubVote memory _vote) public OnlySpectator OnlyValidNPC(_vote.npc) {
+             if (msg.sender != _vote.spectator) {
+revert SpectatorInvalid();
+        }
+
            _spectatorToAllPubVotes[_vote.spectator][_vote.profileId][_vote.pubId].push(_vote);
 _spectatorGlobalTally[_vote.spectator][_vote.npc].total += _vote.global;
 _spectatorGlobalTally[_vote.spectator][_vote.npc].weekly += _vote.global;

@@ -22,8 +22,8 @@ type NPCVote @entity(immutable: true) {
 type PubVote @entity(immutable: true) {
   id: Bytes!
   spectator: [Bytes!] # address
-  profileId: [BigInt!] # uint256
-  pubId: [BigInt!] # uint256
+  profileId: BigInt! # uint256
+  pubId: BigInt! # uint256
   blockNumber: [BigInt!]
   blockTimestamp: [BigInt!]
   transactionHash: [Bytes!]
@@ -153,6 +153,37 @@ type SpectatorWeightsCalculated @entity(immutable: true) {
   npc: Bytes! # address
   globalWeight: BigInt! # uint256
   globalWeightNormalized: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type AdminAdded @entity(immutable: true) {
+  id: Bytes!
+  admin: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type AdminRemoved @entity(immutable: true) {
+  id: Bytes!
+  admin: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NPCAdded @entity(immutable: true) {
+  id: Bytes!
+  npc: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NPCRemoved @entity(immutable: true) {
+  id: Bytes!
+  npc: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

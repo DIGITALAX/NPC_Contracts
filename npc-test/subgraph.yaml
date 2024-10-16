@@ -68,3 +68,32 @@ dataSources:
         - event: SpectatorWeightsCalculated(address,uint256,uint256)
           handler: handleSpectatorWeightsCalculated
       file: ./src/npc-rent.ts
+  - kind: ethereum
+    name: NPCAccessControls
+    network: polygon-amoy
+    source:
+      address: "0xB2EAfAe885A53E0c529c6De8e61aA4bcDC5921dc"
+      abi: NPCAccessControls
+      startBlock: 13066056
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AdminAdded
+        - AdminRemoved
+        - NPCAdded
+        - NPCRemoved
+      abis:
+        - name: NPCAccessControls
+          file: ./abis/NPCAccessControls.json
+      eventHandlers:
+        - event: AdminAdded(indexed address)
+          handler: handleAdminAdded
+        - event: AdminRemoved(indexed address)
+          handler: handleAdminRemoved
+        - event: NPCAdded(indexed address)
+          handler: handleNPCAdded
+        - event: NPCRemoved(indexed address)
+          handler: handleNPCRemoved
+      file: ./src/npc-access-controls.ts

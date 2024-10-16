@@ -6,6 +6,9 @@
     },
     "NPCRent": {
       "address": "0x7fb6f7EF8dfFb0bB8d82b64E6b90BcC5162621F6"
+    },
+    "NPCAccessControls": {
+      "address": "0xB2EAfAe885A53E0c529c6De8e61aA4bcDC5921dc"
     }
   }
 }

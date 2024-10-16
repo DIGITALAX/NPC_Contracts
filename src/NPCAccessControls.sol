@@ -18,6 +18,15 @@ contract NPCAccessControls {
     event AdminRemoved(address indexed admin);
     event NPCAdded(address indexed npc);
     event NPCRemoved(address indexed npc);
+    event ERC20Added(
+        address indexed token,
+        uint256 weight,
+        uint256 threshold,
+        uint256 decimal
+    );
+    event ERC20Removed(address indexed npc);
+    event ERC721Added(address indexed token, uint256 weight, uint256 threshold);
+    event ERC721Removed(address indexed npc);
 
     error AddressInvalid();
     error Existing();
@@ -89,6 +98,7 @@ contract NPCAccessControls {
             threshold: _threshold,
             decimal: 0
         });
+        emit ERC721Added(_erc721Address, _weight, _threshold);
     }
 
     function setERC20Value(
@@ -102,6 +112,17 @@ contract NPCAccessControls {
             threshold: _threshold,
             decimal: _decimal
         });
+        emit ERC20Added(_erc20Address, _weight, _threshold, _decimal);
+    }
+
+    function removeERC721Value(address _erc721Address) public OnlyAdmin {
+        delete _erc721Values[_erc721Address];
+        emit ERC721Removed(_erc721Address);
+    }
+
+    function removeERC20Value(address _erc20Address) public OnlyAdmin {
+        delete _erc20Values[_erc20Address];
+        emit ERC20Removed(_erc20Address);
     }
 
     function isAdmin(address _address) public view returns (bool) {
