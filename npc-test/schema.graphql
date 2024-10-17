@@ -1,4 +1,4 @@
-type NPCVote @entity(immutable: true) {
+type NPCVote @entity(immutable: false) {
   id: Bytes!
   spectator: [Bytes!] # address
   npc: Bytes! # address
@@ -19,7 +19,7 @@ type NPCVote @entity(immutable: true) {
   global: [BigInt!]
 }
 
-type PubVote @entity(immutable: true) {
+type PubVote @entity(immutable: false) {
   id: Bytes!
   spectator: [Bytes!] # address
   profileId: BigInt! # uint256
@@ -39,14 +39,14 @@ type PubVote @entity(immutable: true) {
   global: [BigInt!]
 }
 
-type WeeklyReset @entity(immutable: true) {
+type WeeklyReset @entity(immutable: false) {
   id: Bytes!
   reseter: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-type MissedRentDistributed @entity(immutable: true) {
+type MissedRentDistributed @entity(immutable: false) {
   id: Bytes!
   amount: BigInt! # uint256
   blockNumber: BigInt!
@@ -54,7 +54,7 @@ type MissedRentDistributed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NPCWeightsCalculated @entity(immutable: true) {
+type NPCWeightsCalculated @entity(immutable: false) {
   id: Bytes!
   npc: Bytes! # address
   globalWeight: BigInt! # uint256
@@ -63,7 +63,7 @@ type NPCWeightsCalculated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RentMissed @entity(immutable: true) {
+type RentMissed @entity(immutable: false) {
   id: Bytes!
   npc: Bytes! # address
   auAmountPaid: BigInt! # uint256
@@ -120,7 +120,7 @@ type SpectatorInfo @entity(immutable: false) {
   weekWeight: BigInt!
 }
 
-type RentPaid @entity(immutable: true) {
+type RentPaid @entity(immutable: false) {
   id: Bytes!
   npc: Bytes! # address
   auAmountClaimed: BigInt! # uint256
@@ -130,7 +130,7 @@ type RentPaid @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type SpectatorClaimed @entity(immutable: true) {
+type SpectatorClaimed @entity(immutable: false) {
   id: Bytes!
   spectator: Bytes! # address
   auAmountClaimed: BigInt! # uint256
@@ -139,7 +139,7 @@ type SpectatorClaimed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type SpectatorClaimedAll @entity(immutable: true) {
+type SpectatorClaimedAll @entity(immutable: false) {
   id: Bytes!
   spectator: Bytes! # address
   auAmountClaimed: BigInt! # uint256
@@ -148,7 +148,7 @@ type SpectatorClaimedAll @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type SpectatorWeightsCalculated @entity(immutable: true) {
+type SpectatorWeightsCalculated @entity(immutable: false) {
   id: Bytes!
   npc: Bytes! # address
   globalWeight: BigInt! # uint256
@@ -157,7 +157,7 @@ type SpectatorWeightsCalculated @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-type AdminAdded @entity(immutable: true) {
+type AdminAdded @entity(immutable: false) {
   id: Bytes!
   admin: Bytes! # address
   blockNumber: BigInt!
@@ -165,7 +165,7 @@ type AdminAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type AdminRemoved @entity(immutable: true) {
+type AdminRemoved @entity(immutable: false) {
   id: Bytes!
   admin: Bytes! # address
   blockNumber: BigInt!
@@ -173,7 +173,7 @@ type AdminRemoved @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NPCAdded @entity(immutable: true) {
+type NPCAdded @entity(immutable: false) {
   id: Bytes!
   npc: Bytes! # address
   blockNumber: BigInt!
@@ -181,7 +181,7 @@ type NPCAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NPCRemoved @entity(immutable: true) {
+type NPCRemoved @entity(immutable: false) {
   id: Bytes!
   npc: Bytes! # address
   blockNumber: BigInt!

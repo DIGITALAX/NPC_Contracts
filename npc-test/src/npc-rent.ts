@@ -161,21 +161,17 @@ export function handleRentPaid(event: RentPaidEvent): void {
     npcRent.npc = event.params.npc;
   }
 
-  if (!npcRent.blockNumber) {
-    npcRent.blockNumber = [];
-  }
+  let blockNumber = npcRent.blockNumber || new Array<BigInt>();
+  (blockNumber as Array<BigInt>).push(event.block.timestamp);
+  npcRent.blockNumber = blockNumber;
 
-  (npcRent.blockNumber as Array<BigInt>).push(event.block.timestamp);
-  if (!npcRent.transactionHash) {
-    npcRent.transactionHash = [];
-  }
+  let transactionHash = npcRent.transactionHash || new Array<Bytes>();
+  (transactionHash as Array<Bytes>).push(event.transaction.hash);
+  npcRent.transactionHash = transactionHash;
 
-  (npcRent.transactionHash as Array<Bytes>).push(event.transaction.hash);
-  if (!npcRent.amount) {
-    npcRent.amount = [];
-  }
-
-  (npcRent.amount as Array<BigInt>).push(event.params.auAmountPaid);
+  let amount = npcRent.amount || new Array<BigInt>();
+  (amount as Array<BigInt>).push(event.params.auAmountPaid);
+  npcRent.amount = amount;
 
   npcRent.save();
 

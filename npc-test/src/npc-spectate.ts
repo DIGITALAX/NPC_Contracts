@@ -9,7 +9,7 @@ import { NPCVote, PubVote, WeeklyReset } from "../generated/schema";
 
 export function handleNPCVote(event: NPCVoteEvent): void {
   let entityId = Bytes.fromByteArray(
-    ByteArray.fromBigInt(BigInt.fromString(event.params.npc.toString()))
+    ByteArray.fromHexString(event.params.npc.toHexString())
   );
 
   let entity = NPCVote.load(entityId);
@@ -19,29 +19,21 @@ export function handleNPCVote(event: NPCVoteEvent): void {
   }
   entity.npc = event.params.npc;
 
-  if (!entity.spectator) {
-    entity.spectator = [];
-  }
+  let spectator = entity.spectator || new Array<Bytes>();
+  (spectator as Array<Bytes>).push(event.params.spectator);
+  entity.spectator = spectator;
 
-  (entity.spectator as Array<Bytes>).push(event.params.spectator);
+  let blockNumber = entity.blockNumber || new Array<BigInt>();
+  (blockNumber as Array<BigInt>).push(event.block.number);
+  entity.blockNumber = blockNumber;
 
-  if (!entity.blockNumber) {
-    entity.blockNumber = [];
-  }
+  let blockTimestamp = entity.blockTimestamp || new Array<BigInt>();
+  (blockTimestamp as Array<BigInt>).push(event.block.timestamp);
+  entity.blockTimestamp = blockTimestamp;
 
-  (entity.blockNumber as Array<BigInt>).push(event.block.number);
-
-  if (!entity.blockTimestamp) {
-    entity.blockTimestamp = [];
-  }
-
-  (entity.blockTimestamp as Array<BigInt>).push(event.block.timestamp);
-
-  if (!entity.transactionHash) {
-    entity.transactionHash = [];
-  }
-
-  (entity.transactionHash as Array<Bytes>).push(event.transaction.hash);
+  let transactionHash = entity.transactionHash || new Array<Bytes>();
+  (transactionHash as Array<Bytes>).push(event.transaction.hash);
+  entity.transactionHash = transactionHash;
 
   let datos = NPCSpectate.bind(
     Address.fromString("0x6B92Fb260e98dAEb1c4C613b16CC9D4bc5d6F184")
@@ -54,29 +46,22 @@ export function handleNPCVote(event: NPCVoteEvent): void {
     )
     .minus(BigInt.fromI32(1));
 
-  if (!entity.comment) {
-    entity.comment = [];
-  }
-
-  (entity.comment as Array<String>).push(
+  let comment = entity.comment || new Array<string>();
+  (comment as Array<string>).push(
     datos.getNPCVoteComment(event.params.spectator, event.params.npc, freq)
   );
+  entity.comment = comment;
 
-  if (!entity.model) {
-    entity.model = [];
-  }
-
-  (entity.model as Array<BigInt>).push(
+  let model = entity.model || new Array<BigInt>();
+  (model as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteModel(event.params.spectator, event.params.npc, freq)
     )
   );
+  entity.model = model;
 
-  if (!entity.chatContext) {
-    entity.chatContext = [];
-  }
-
-  (entity.chatContext as Array<BigInt>).push(
+  let chatContext = entity.chatContext || new Array<BigInt>();
+  (chatContext as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteChatContext(
         event.params.spectator,
@@ -85,12 +70,18 @@ export function handleNPCVote(event: NPCVoteEvent): void {
       )
     )
   );
+  entity.chatContext = chatContext;
 
-  if (!entity.spriteSheet) {
-    entity.spriteSheet = [];
-  }
+  let appearance = entity.appearance || new Array<BigInt>();
+  (appearance as Array<BigInt>).push(
+    BigInt.fromI32(
+      datos.getNPCVoteAppearance(event.params.spectator, event.params.npc, freq)
+    )
+  );
+  entity.appearance = appearance;
 
-  (entity.spriteSheet as Array<BigInt>).push(
+  let spriteSheet = entity.spriteSheet || new Array<BigInt>();
+  (spriteSheet as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteSpriteSheet(
         event.params.spectator,
@@ -99,22 +90,18 @@ export function handleNPCVote(event: NPCVoteEvent): void {
       )
     )
   );
+  entity.spriteSheet = spriteSheet;
 
-  if (!entity.lora) {
-    entity.lora = [];
-  }
-
-  (entity.lora as Array<BigInt>).push(
+  let lora = entity.lora || new Array<BigInt>();
+  (lora as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteLora(event.params.spectator, event.params.npc, freq)
     )
   );
+  entity.lora = lora;
 
-  if (!entity.personality) {
-    entity.personality = [];
-  }
-
-  (entity.personality as Array<BigInt>).push(
+  let personality = entity.personality || new Array<BigInt>();
+  (personality as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVotePersonality(
         event.params.spectator,
@@ -123,32 +110,26 @@ export function handleNPCVote(event: NPCVoteEvent): void {
       )
     )
   );
+  entity.personality = personality;
 
-  if (!entity.tokenizer) {
-    entity.tokenizer = [];
-  }
-
-  (entity.tokenizer as Array<BigInt>).push(
+  let tokenizer = entity.tokenizer || new Array<BigInt>();
+  (tokenizer as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteTokenizer(event.params.spectator, event.params.npc, freq)
     )
   );
+  entity.tokenizer = tokenizer;
 
-  if (!entity.training) {
-    entity.training = [];
-  }
-
-  (entity.training as Array<BigInt>).push(
+  let training = entity.training || new Array<BigInt>();
+  (training as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteTraining(event.params.spectator, event.params.npc, freq)
     )
   );
+  entity.training = training;
 
-  if (!entity.completedJobs) {
-    entity.training = [];
-  }
-
-  (entity.completedJobs as Array<BigInt>).push(
+  let completedJobs = entity.completedJobs || new Array<BigInt>();
+  (completedJobs as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteCompletedJobs(
         event.params.spectator,
@@ -157,73 +138,58 @@ export function handleNPCVote(event: NPCVoteEvent): void {
       )
     )
   );
+  entity.completedJobs = completedJobs;
 
-  if (!entity.scene) {
-    entity.scene = [];
-  }
-
-  (entity.scene as Array<BigInt>).push(
+  let scene = entity.scene || new Array<BigInt>();
+  (scene as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteScene(event.params.spectator, event.params.npc, freq)
     )
   );
+  entity.scene = scene;
 
-  if (!entity.global) {
-    entity.global = [];
-  }
-
-  (entity.global as Array<BigInt>).push(
+  let global = entity.global || new Array<BigInt>();
+  (global as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getNPCVoteGlobal(event.params.spectator, event.params.npc, freq)
     )
   );
-
-  entity.save();
+  entity.global = global;
 
   entity.save();
 }
 
 export function handlePubVote(event: PubVoteEvent): void {
   let entityId = Bytes.fromByteArray(
-    ByteArray.fromBigInt(
-      BigInt.fromString(
-        event.params.profileId.toString() + event.params.pubId.toString()
-      )
+    ByteArray.fromBigInt(event.params.profileId).concat(
+      ByteArray.fromBigInt(event.params.pubId)
     )
   );
 
   let entity = PubVote.load(entityId);
   if (!entity) {
     entity = new PubVote(entityId);
+
+    entity.profileId = event.params.profileId;
+
+    entity.pubId = event.params.pubId;
   }
 
-  if (!entity.spectator) {
-    entity.spectator = [];
-  }
+  let spectators = entity.spectator || new Array<Bytes>();
+  (spectators as Array<Bytes>).push(event.params.spectator);
+  entity.spectator = spectators;
 
-  (entity.spectator as Array<Bytes>).push(event.params.spectator);
+  let blockNumber = entity.blockNumber || new Array<BigInt>();
+  (blockNumber as Array<BigInt>).push(event.block.number);
+  entity.blockNumber = blockNumber;
 
-  entity.profileId = event.params.profileId;
+  let blockTimestamp = entity.blockTimestamp || new Array<BigInt>();
+  (blockTimestamp as Array<BigInt>).push(event.block.timestamp);
+  entity.blockTimestamp = blockTimestamp;
 
-  entity.pubId = event.params.pubId;
-
-  if (!entity.blockNumber) {
-    entity.blockNumber = [];
-  }
-
-  (entity.blockNumber as Array<BigInt>).push(event.block.number);
-
-  if (!entity.blockTimestamp) {
-    entity.blockTimestamp = [];
-  }
-
-  (entity.blockTimestamp as Array<BigInt>).push(event.block.timestamp);
-
-  if (!entity.transactionHash) {
-    entity.transactionHash = [];
-  }
-
-  (entity.transactionHash as Array<Bytes>).push(event.transaction.hash);
+  let transactionHash = entity.transactionHash || new Array<Bytes>();
+  (transactionHash as Array<Bytes>).push(event.transaction.hash);
+  entity.transactionHash = transactionHash;
 
   let datos = NPCSpectate.bind(
     Address.fromString("0x6B92Fb260e98dAEb1c4C613b16CC9D4bc5d6F184")
@@ -237,11 +203,8 @@ export function handlePubVote(event: PubVoteEvent): void {
     )
     .minus(BigInt.fromI32(1));
 
-  if (!entity.comment) {
-    entity.comment = [];
-  }
-
-  (entity.comment as Array<String>).push(
+  let comment = entity.comment || new Array<string>();
+  (comment as Array<string>).push(
     datos.getPubVoteComment(
       event.params.spectator,
       event.params.profileId,
@@ -249,12 +212,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       freq
     )
   );
+  entity.comment = comment;
 
-  if (!entity.npc) {
-    entity.npc = [];
-  }
-
-  (entity.npc as Array<Bytes>).push(
+  let npc = entity.npc || new Array<Bytes>();
+  (npc as Array<Bytes>).push(
     datos.getPubVoteNPC(
       event.params.spectator,
       event.params.profileId,
@@ -262,12 +223,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       freq
     )
   );
+  entity.npc = npc;
 
-  if (!entity.model) {
-    entity.model = [];
-  }
-
-  (entity.model as Array<BigInt>).push(
+  let model = entity.model || new Array<BigInt>();
+  (model as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVoteModel(
         event.params.spectator,
@@ -277,12 +236,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.model = model;
 
-  if (!entity.chatContext) {
-    entity.chatContext = [];
-  }
-
-  (entity.chatContext as Array<BigInt>).push(
+  let chatContext = entity.chatContext || new Array<BigInt>();
+  (chatContext as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVoteChatContext(
         event.params.spectator,
@@ -292,12 +249,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.chatContext = chatContext;
 
-  if (!entity.prompt) {
-    entity.prompt = [];
-  }
-
-  (entity.prompt as Array<BigInt>).push(
+  let prompt = entity.prompt || new Array<BigInt>();
+  (prompt as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVotePrompt(
         event.params.spectator,
@@ -307,12 +262,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.prompt = prompt;
 
-  if (!entity.style) {
-    entity.style = [];
-  }
-
-  (entity.style as Array<BigInt>).push(
+  let style = entity.style || new Array<BigInt>();
+  (style as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVoteStyle(
         event.params.spectator,
@@ -322,12 +275,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.style = style;
 
-  if (!entity.personality) {
-    entity.personality = [];
-  }
-
-  (entity.personality as Array<BigInt>).push(
+  let personality = entity.personality || new Array<BigInt>();
+  (personality as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVotePersonality(
         event.params.spectator,
@@ -337,12 +288,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.personality = personality;
 
-  if (!entity.tokenizer) {
-    entity.tokenizer = [];
-  }
-
-  (entity.tokenizer as Array<BigInt>).push(
+  let tokenizer = entity.tokenizer || new Array<BigInt>();
+  (tokenizer as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVoteTokenizer(
         event.params.spectator,
@@ -352,12 +301,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.tokenizer = tokenizer;
 
-  if (!entity.media) {
-    entity.media = [];
-  }
-
-  (entity.media as Array<BigInt>).push(
+  let media = entity.media || new Array<BigInt>();
+  (media as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVoteMedia(
         event.params.spectator,
@@ -367,12 +314,10 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.media = media;
 
-  if (!entity.global) {
-    entity.global = [];
-  }
-
-  (entity.global as Array<BigInt>).push(
+  let global = entity.global || new Array<BigInt>();
+  (global as Array<BigInt>).push(
     BigInt.fromI32(
       datos.getPubVoteGlobal(
         event.params.spectator,
@@ -382,6 +327,7 @@ export function handlePubVote(event: PubVoteEvent): void {
       )
     )
   );
+  entity.global = global;
 
   entity.save();
 }
